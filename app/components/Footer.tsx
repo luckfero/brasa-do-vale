@@ -1,10 +1,17 @@
+import Image from "next/image";
+
 export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
-          <span className="wordmark-main">Brasa do Vale</span>
-          <span className="wordmark-sub">Churrascaria</span>
+          <div className="footer-brand-lockup">
+            <Image className="brand-mark brand-mark-footer" src="/logo-mark.svg" alt="" width={52} height={52} />
+            <span className="wordmark-copy">
+              <span className="wordmark-main">Brasa do Vale</span>
+              <span className="wordmark-sub">Churrascaria</span>
+            </span>
+          </div>
           <p>Tradição brasileira, cortes na brasa e hospitalidade no coração do ABC.</p>
         </div>
         <div>

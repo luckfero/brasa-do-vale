@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -22,8 +23,11 @@ export default function Header() {
         {/* A navegação documental preserva transições entre páginas e evita dependência de JavaScript. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a className="wordmark" href="/" aria-label="Brasa do Vale Churrascaria — início">
-          <span className="wordmark-main">Brasa do Vale</span>
-          <span className="wordmark-sub">Churrascaria</span>
+          <Image className="brand-mark" src="/logo-mark.svg" alt="" width={46} height={46} priority />
+          <span className="wordmark-copy">
+            <span className="wordmark-main">Brasa do Vale</span>
+            <span className="wordmark-sub">Churrascaria</span>
+          </span>
         </a>
 
         <button
