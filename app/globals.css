@@ -17,7 +17,130 @@
   --sans: Arial, Helvetica, sans-serif;
 }
 
+/* ─────────────────────── fundos responsivos ───────────────────────
+ *
+ * As fotos grandes do site são fundos de CSS, não `<img>`, então não dá
+ * para usar `srcset`. O equivalente é `image-set()`: o navegador escolhe o
+ * primeiro formato que entende (AVIF, senão WebP) e a densidade de tela
+ * certa. A largura entra por breakpoint, trocando o token abaixo.
+ *
+ * Antes, todo visitante baixava o PNG cheio — o celular recebia exatamente
+ * os mesmos 2 MB do desktop. As variantes vêm de scripts/optimize-images.mjs.
+ *
+ * Cada regra que usa um destes tokens declara antes um `url()` simples: em
+ * navegador sem `image-set()` com `type()`, a segunda declaração é inválida
+ * e a primeira prevalece.
+ */
+:root {
+  --bg-churrasco: image-set(
+    url('/images/r/hero-churrasco-1200.avif') type('image/avif') 1x,
+    url('/images/r/hero-churrasco-1600.avif') type('image/avif') 2x,
+    url('/images/r/hero-churrasco-1200.webp') type('image/webp') 1x,
+    url('/images/r/hero-churrasco-1600.webp') type('image/webp') 2x);
+  --bg-buffet: image-set(
+    url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 1x,
+    url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 2x,
+    url('/images/r/buffet-ilustrativo-1200.webp') type('image/webp') 1x,
+    url('/images/r/buffet-ilustrativo-1200.webp') type('image/webp') 2x);
+  --bg-eventos: image-set(
+    url('/images/r/sala-eventos-ilustrativa-1200.avif') type('image/avif') 1x,
+    url('/images/r/sala-eventos-ilustrativa-1200.avif') type('image/avif') 2x,
+    url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 1x,
+    url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 2x);
+  --bg-rodizio: image-set(
+    url('/images/r/hero-rodizio-1200.avif') type('image/avif') 1x,
+    url('/images/r/hero-rodizio-1600.avif') type('image/avif') 2x,
+    url('/images/r/hero-rodizio-1200.webp') type('image/webp') 1x,
+    url('/images/r/hero-rodizio-1600.webp') type('image/webp') 2x);
+  --bg-historia: image-set(
+    url('/images/r/hero-historia-1200.avif') type('image/avif') 1x,
+    url('/images/r/hero-historia-1200.avif') type('image/avif') 2x,
+    url('/images/r/hero-historia-1200.webp') type('image/webp') 1x,
+    url('/images/r/hero-historia-1200.webp') type('image/webp') 2x);
+  --bg-contato: image-set(
+    url('/images/r/hero-contato-1200.avif') type('image/avif') 1x,
+    url('/images/r/hero-contato-1600.avif') type('image/avif') 2x,
+    url('/images/r/hero-contato-1200.webp') type('image/webp') 1x,
+    url('/images/r/hero-contato-1600.webp') type('image/webp') 2x);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --bg-churrasco: image-set(
+      url('/images/r/hero-churrasco-800.avif') type('image/avif') 1x,
+      url('/images/r/hero-churrasco-1600.avif') type('image/avif') 2x,
+      url('/images/r/hero-churrasco-800.webp') type('image/webp') 1x,
+      url('/images/r/hero-churrasco-1600.webp') type('image/webp') 2x);
+    --bg-buffet: image-set(
+      url('/images/r/buffet-ilustrativo-800.avif') type('image/avif') 1x,
+      url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 2x,
+      url('/images/r/buffet-ilustrativo-800.webp') type('image/webp') 1x,
+      url('/images/r/buffet-ilustrativo-1200.webp') type('image/webp') 2x);
+    --bg-eventos: image-set(
+      url('/images/r/sala-eventos-ilustrativa-800.avif') type('image/avif') 1x,
+      url('/images/r/sala-eventos-ilustrativa-1200.avif') type('image/avif') 2x,
+      url('/images/r/sala-eventos-ilustrativa-800.webp') type('image/webp') 1x,
+      url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 2x);
+    --bg-rodizio: image-set(
+      url('/images/r/hero-rodizio-800.avif') type('image/avif') 1x,
+      url('/images/r/hero-rodizio-1600.avif') type('image/avif') 2x,
+      url('/images/r/hero-rodizio-800.webp') type('image/webp') 1x,
+      url('/images/r/hero-rodizio-1600.webp') type('image/webp') 2x);
+    --bg-historia: image-set(
+      url('/images/r/hero-historia-800.avif') type('image/avif') 1x,
+      url('/images/r/hero-historia-1200.avif') type('image/avif') 2x,
+      url('/images/r/hero-historia-800.webp') type('image/webp') 1x,
+      url('/images/r/hero-historia-1200.webp') type('image/webp') 2x);
+    --bg-contato: image-set(
+      url('/images/r/hero-contato-800.avif') type('image/avif') 1x,
+      url('/images/r/hero-contato-1600.avif') type('image/avif') 2x,
+      url('/images/r/hero-contato-800.webp') type('image/webp') 1x,
+      url('/images/r/hero-contato-1600.webp') type('image/webp') 2x);
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --bg-churrasco: image-set(
+      url('/images/r/hero-churrasco-480.avif') type('image/avif') 1x,
+      url('/images/r/hero-churrasco-1200.avif') type('image/avif') 2x,
+      url('/images/r/hero-churrasco-480.webp') type('image/webp') 1x,
+      url('/images/r/hero-churrasco-1200.webp') type('image/webp') 2x);
+    --bg-buffet: image-set(
+      url('/images/r/buffet-ilustrativo-480.avif') type('image/avif') 1x,
+      url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 2x,
+      url('/images/r/buffet-ilustrativo-480.webp') type('image/webp') 1x,
+      url('/images/r/buffet-ilustrativo-1200.webp') type('image/webp') 2x);
+    --bg-eventos: image-set(
+      url('/images/r/sala-eventos-ilustrativa-480.avif') type('image/avif') 1x,
+      url('/images/r/sala-eventos-ilustrativa-1200.avif') type('image/avif') 2x,
+      url('/images/r/sala-eventos-ilustrativa-480.webp') type('image/webp') 1x,
+      url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 2x);
+    --bg-rodizio: image-set(
+      url('/images/r/hero-rodizio-480.avif') type('image/avif') 1x,
+      url('/images/r/hero-rodizio-1200.avif') type('image/avif') 2x,
+      url('/images/r/hero-rodizio-480.webp') type('image/webp') 1x,
+      url('/images/r/hero-rodizio-1200.webp') type('image/webp') 2x);
+    --bg-historia: image-set(
+      url('/images/r/hero-historia-480.avif') type('image/avif') 1x,
+      url('/images/r/hero-historia-1200.avif') type('image/avif') 2x,
+      url('/images/r/hero-historia-480.webp') type('image/webp') 1x,
+      url('/images/r/hero-historia-1200.webp') type('image/webp') 2x);
+    --bg-contato: image-set(
+      url('/images/r/hero-contato-480.avif') type('image/avif') 1x,
+      url('/images/r/hero-contato-1200.avif') type('image/avif') 2x,
+      url('/images/r/hero-contato-480.webp') type('image/webp') 1x,
+      url('/images/r/hero-contato-1200.webp') type('image/webp') 2x);
+  }
+}
+
 * { box-sizing: border-box; }
+
+/* `picture` sai do fluxo para que o `img` seja filho direto do contêiner.
+   Sem isso, `picture` é `inline` por padrão e as regras de proporção e
+   largura escritas para o `img` passam a brigar com a caixa do pai,
+   deixando faixa de fundo aparecendo sob a foto. */
+picture { display: contents; }
 
 html { scroll-behavior: smooth; }
 
@@ -136,7 +259,8 @@ button, input, textarea, select { font: inherit; }
   background: var(--charcoal);
 }
 
-.hero-media { position: absolute; inset: 0; background: var(--charcoal) url('/images/hero-churrasco.png') center / cover no-repeat; transform: scale(1.02); }
+.hero-media { position: absolute; inset: 0; background: var(--charcoal) center / cover no-repeat; transform: scale(1.02); }
+.hero-media { background-image: url('/images/r/hero-churrasco-1200.webp'); background-image: var(--bg-churrasco); }
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(18,16,15,0.98) 0%, rgba(18,16,15,0.82) 42%, rgba(18,16,15,0.25) 75%, rgba(18,16,15,0.3) 100%); }
 .hero::before { content: ""; position: absolute; z-index: 1; width: 38vw; aspect-ratio: 1; right: 5vw; top: 50%; translate: 0 -50%; border: 1px solid rgba(199,151,62,0.2); border-radius: 50%; box-shadow: 0 0 0 5vw rgba(199,151,62,0.035), 0 0 0 10vw rgba(199,151,62,0.025); }
 .hero-content { position: relative; z-index: 2; padding-block: clamp(3.5rem, 7vw, 6.25rem); }
@@ -181,7 +305,11 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 
 .story-preview { background: var(--cream-light); }
 .story-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(3rem, 7vw, 7rem); align-items: center; }
-.story-visual { min-height: 620px; position: relative; background: var(--charcoal) url('/images/hero-churrasco.png') 76% center / auto 100% no-repeat; overflow: hidden; box-shadow: var(--shadow); }
+/* Era a mesma foto de carne do hero, a meia página de distância. O buffet
+   conversa com o texto ao lado ("o buffet ganhou novos caminhos") e não se
+   repete em nenhuma outra seção da home. */
+.story-visual { min-height: 620px; position: relative; background: var(--charcoal) center / cover no-repeat; overflow: hidden; box-shadow: var(--shadow); }
+.story-visual { background-image: url('/images/r/buffet-ilustrativo-1200.webp'); background-image: var(--bg-buffet); }
 .story-visual::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(28,25,23,0.45)); }
 .story-visual::after { content: ""; position: absolute; inset: 8%; border: 1px solid rgba(255,255,255,0.16); }
 .story-stat { position: absolute; left: 0; bottom: 0; z-index: 2; width: 190px; aspect-ratio: 1; padding: 1.5rem; display: flex; flex-direction: column; justify-content: end; background: var(--gold); color: var(--charcoal); }
@@ -202,7 +330,8 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .events-feature-copy { padding: clamp(4rem, 8vw, 7rem) clamp(2rem, 6vw, 5.5rem) clamp(4rem, 8vw, 7rem) 0; display: flex; flex-direction: column; justify-content: center; }
 .events-feature-copy p:not(.eyebrow) { max-width: 520px; margin: 2rem 0 2.4rem; color: rgba(255,255,255,0.74); }
 .events-feature-copy .button { width: fit-content; }
-.events-feature-image { min-height: 650px; background: var(--charcoal) url('/images/sala-eventos-ilustrativa.png') center / cover no-repeat; box-shadow: -18px 0 50px rgba(18,16,15,0.22); }
+.events-feature-image { min-height: 650px; background: var(--charcoal) center / cover no-repeat; box-shadow: -18px 0 50px rgba(18,16,15,0.22); }
+.events-feature-image { background-image: url('/images/r/sala-eventos-ilustrativa-1200.webp'); background-image: var(--bg-eventos); }
 
 .visit-section { background: var(--cream); }
 .visit-panel { display: grid; grid-template-columns: 0.72fr 1.28fr; overflow: hidden; background: var(--white); border: 1px solid var(--border); box-shadow: var(--shadow); }
@@ -250,12 +379,12 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
   scroll-margin-top: 100px;
 }
 
-.page-hero-meat { background-image: url('/images/hero-churrasco.png'); background-position: 65% center; }
-.page-hero-buffet { background-image: url('/images/buffet-ilustrativo.png'); }
-.page-hero-events { background-image: url('/images/sala-eventos-ilustrativa.png'); }
-.page-hero-rodizio { background-image: url('/images/hero-rodizio.webp'); background-position: center; }
-.page-hero-history { background-image: url('/images/hero-historia.webp'); background-position: center; }
-.page-hero-contact { background-image: url('/images/hero-contato.webp'); background-position: center; }
+.page-hero-meat { background-image: url('/images/r/hero-churrasco-1200.webp'); background-image: var(--bg-churrasco); background-position: 65% center; }
+.page-hero-buffet { background-image: url('/images/r/buffet-ilustrativo-1200.webp'); background-image: var(--bg-buffet); }
+.page-hero-events { background-image: url('/images/r/sala-eventos-ilustrativa-1200.webp'); background-image: var(--bg-eventos); }
+.page-hero-rodizio { background-image: url('/images/r/hero-rodizio-1200.webp'); background-image: var(--bg-rodizio); background-position: center; }
+.page-hero-history { background-image: url('/images/r/hero-historia-1200.webp'); background-image: var(--bg-historia); background-position: center; }
+.page-hero-contact { background-image: url('/images/r/hero-contato-1200.webp'); background-image: var(--bg-contato); background-position: center; }
 .page-hero-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(28,25,23,0.97) 0%, rgba(28,25,23,0.8) 45%, rgba(28,25,23,0.28) 100%), linear-gradient(0deg, rgba(28,25,23,0.5), transparent 50%); }
 .page-hero-content { position: relative; z-index: 1; padding-block: clamp(4.5rem, 9vw, 7rem); }
 .page-hero h1 { max-width: 920px; font-size: clamp(3.2rem, 6.4vw, 6.2rem); }
@@ -276,7 +405,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 
 .image-text-section { display: grid; grid-template-columns: 1.1fr 0.9fr; min-height: 670px; background: var(--white); }
 .image-panel { background-size: cover; background-position: center; }
-.image-panel-buffet { background-image: url('/images/buffet-ilustrativo.png'); }
+.image-panel-buffet { background-image: url('/images/r/buffet-ilustrativo-1200.webp'); background-image: var(--bg-buffet); }
 .image-text-copy { padding: clamp(3rem, 7vw, 7rem); display: flex; flex-direction: column; justify-content: center; }
 .image-text-copy p:not(.eyebrow) { margin: 1.8rem 0 0; color: #625b55; }
 .image-text-copy .button { margin-top: 1.4rem; width: fit-content; }
@@ -296,7 +425,8 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .stack-list .button { margin-top: 2rem; width: fit-content; }
 
 .events-overview { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(3rem, 7vw, 7rem); align-items: center; }
-.events-image { min-height: 650px; position: relative; background: var(--charcoal) url('/images/sala-eventos-ilustrativa.png') center / cover no-repeat; box-shadow: var(--shadow); }
+.events-image { min-height: 650px; position: relative; background: var(--charcoal) center / cover no-repeat; box-shadow: var(--shadow); }
+.events-image { background-image: url('/images/r/sala-eventos-ilustrativa-1200.webp'); background-image: var(--bg-eventos); }
 .events-image span { position: absolute; left: 1rem; bottom: 1rem; padding: 0.4rem 0.65rem; background: rgba(28,25,23,0.86); color: var(--white); font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; }
 .events-overview > div:last-child > p:not(.eyebrow) { margin: 1.8rem 0 0; color: #625b55; }
 .detail-list { margin: 2.2rem 0 1rem; border-top: 1px solid var(--border); }

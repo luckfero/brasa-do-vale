@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import PageHero from "../components/PageHero";
+import Picture from "../components/Picture";
 
 export const metadata: Metadata = { title: "Galeria", description: "Conheça os sabores e ambientes que compõem a experiência da Brasa do Vale." };
 
@@ -15,7 +15,7 @@ export default function GalleryPage() {
     <main id="conteudo-principal">
       <PageHero eyebrow="Galeria" title="Sabores e ambientes que convidam a ficar." description="Conheça alguns dos detalhes que compõem a experiência da Brasa do Vale, da brasa ao salão reservado." image="buffet" />
       <section className="section section-cream"><div className="container"><div className="gallery-grid">
-        {gallery.map((item) => <figure key={item.title}><Image src={item.image} width={item.width} height={item.height} sizes="(max-width: 720px) 100vw, 50vw" alt={item.text} /><figcaption><span>Brasa do Vale</span><h2>{item.title}</h2><p>{item.text}</p></figcaption></figure>)}
+        {gallery.map((item) => <figure key={item.title}><Picture src={item.image} width={item.width} height={item.height} sizes="(max-width: 720px) 100vw, 50vw" alt={item.text} /><figcaption><span>Brasa do Vale</span><h2>{item.title}</h2><p>{item.text}</p></figcaption></figure>)}
       </div><div className="demo-disclosure gallery-note"><strong>Feito para compartilhar</strong><p>Uma boa experiência também vive nos detalhes: o ponto da carne, a variedade do buffet e o ambiente preparado para receber.</p></div></div></section>
     </main>
   );
