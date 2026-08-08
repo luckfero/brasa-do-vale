@@ -34,9 +34,9 @@
 :root {
   --bg-churrasco: image-set(
     url('/images/r/hero-churrasco-1200.avif') type('image/avif') 1x,
-    url('/images/r/hero-churrasco-1600.avif') type('image/avif') 2x,
+    url('/images/r/hero-churrasco-1200.avif') type('image/avif') 2x,
     url('/images/r/hero-churrasco-1200.webp') type('image/webp') 1x,
-    url('/images/r/hero-churrasco-1600.webp') type('image/webp') 2x);
+    url('/images/r/hero-churrasco-1200.webp') type('image/webp') 2x);
   --bg-buffet: image-set(
     url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 1x,
     url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 2x,
@@ -49,9 +49,9 @@
     url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 2x);
   --bg-rodizio: image-set(
     url('/images/r/hero-rodizio-1200.avif') type('image/avif') 1x,
-    url('/images/r/hero-rodizio-1600.avif') type('image/avif') 2x,
+    url('/images/r/hero-rodizio-1200.avif') type('image/avif') 2x,
     url('/images/r/hero-rodizio-1200.webp') type('image/webp') 1x,
-    url('/images/r/hero-rodizio-1600.webp') type('image/webp') 2x);
+    url('/images/r/hero-rodizio-1200.webp') type('image/webp') 2x);
   --bg-historia: image-set(
     url('/images/r/hero-historia-1200.avif') type('image/avif') 1x,
     url('/images/r/hero-historia-1200.avif') type('image/avif') 2x,
@@ -59,18 +59,18 @@
     url('/images/r/hero-historia-1200.webp') type('image/webp') 2x);
   --bg-contato: image-set(
     url('/images/r/hero-contato-1200.avif') type('image/avif') 1x,
-    url('/images/r/hero-contato-1600.avif') type('image/avif') 2x,
+    url('/images/r/hero-contato-1200.avif') type('image/avif') 2x,
     url('/images/r/hero-contato-1200.webp') type('image/webp') 1x,
-    url('/images/r/hero-contato-1600.webp') type('image/webp') 2x);
+    url('/images/r/hero-contato-1200.webp') type('image/webp') 2x);
 }
 
 @media (max-width: 900px) {
   :root {
     --bg-churrasco: image-set(
       url('/images/r/hero-churrasco-800.avif') type('image/avif') 1x,
-      url('/images/r/hero-churrasco-1600.avif') type('image/avif') 2x,
+      url('/images/r/hero-churrasco-1200.avif') type('image/avif') 2x,
       url('/images/r/hero-churrasco-800.webp') type('image/webp') 1x,
-      url('/images/r/hero-churrasco-1600.webp') type('image/webp') 2x);
+      url('/images/r/hero-churrasco-1200.webp') type('image/webp') 2x);
     --bg-buffet: image-set(
       url('/images/r/buffet-ilustrativo-800.avif') type('image/avif') 1x,
       url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 2x,
@@ -83,9 +83,9 @@
       url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 2x);
     --bg-rodizio: image-set(
       url('/images/r/hero-rodizio-800.avif') type('image/avif') 1x,
-      url('/images/r/hero-rodizio-1600.avif') type('image/avif') 2x,
+      url('/images/r/hero-rodizio-1200.avif') type('image/avif') 2x,
       url('/images/r/hero-rodizio-800.webp') type('image/webp') 1x,
-      url('/images/r/hero-rodizio-1600.webp') type('image/webp') 2x);
+      url('/images/r/hero-rodizio-1200.webp') type('image/webp') 2x);
     --bg-historia: image-set(
       url('/images/r/hero-historia-800.avif') type('image/avif') 1x,
       url('/images/r/hero-historia-1200.avif') type('image/avif') 2x,
@@ -93,9 +93,9 @@
       url('/images/r/hero-historia-1200.webp') type('image/webp') 2x);
     --bg-contato: image-set(
       url('/images/r/hero-contato-800.avif') type('image/avif') 1x,
-      url('/images/r/hero-contato-1600.avif') type('image/avif') 2x,
+      url('/images/r/hero-contato-1200.avif') type('image/avif') 2x,
       url('/images/r/hero-contato-800.webp') type('image/webp') 1x,
-      url('/images/r/hero-contato-1600.webp') type('image/webp') 2x);
+      url('/images/r/hero-contato-1200.webp') type('image/webp') 2x);
   }
 }
 

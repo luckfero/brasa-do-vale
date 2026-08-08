@@ -41,6 +41,11 @@ async function main() {
   let origemTotal = 0;
   let menorTotal = 0;
 
+  /* Quais larguras existem de fato para cada imagem. Sem isto o `srcset`
+     acabaria citando arquivos que nunca foram gerados — imagem menor que
+     uma largura alvo não é ampliada, então nem toda foto tem as quatro. */
+  const manifesto = {};
+
   for (const file of files) {
     const source = join(SOURCE_DIR, file);
     const { name } = parse(file);
@@ -50,8 +55,10 @@ async function main() {
     origemTotal += tamanhoOrigem;
 
     let menorAvif = null;
+    const disponiveis = [];
     for (const width of WIDTHS) {
       if (width > larguraOrigem) continue;
+      disponiveis.push(width);
       /* Um pipeline novo por saída: reutilizar a mesma instância entre
          codificações faz o sharp reprocessar a origem já consumida. */
       const redimensionada = () => sharp(source).resize({ width, kernel: "lanczos3" });
@@ -66,6 +73,7 @@ async function main() {
       if (menorAvif === null) menorAvif = avif.length;
     }
 
+    manifesto[name] = disponiveis;
     if (menorAvif !== null) menorTotal += menorAvif;
     console.log(
       `· ${name.padEnd(28)} ${String(larguraOrigem).padStart(4)}px  ` +
@@ -74,8 +82,21 @@ async function main() {
     );
   }
 
+  /* Módulo TypeScript em vez de JSON: o import de `.json` não resolve
+     no ambiente RSC do vinext. Gerado — não editar à mão. */
+  const linhas = Object.entries(manifesto)
+    .map(([nome, larguras]) => `  ${JSON.stringify(nome)}: [${larguras.join(", ")}],`)
+    .join("\n");
+  await writeFile(
+    join(root, "app", "image-manifest.ts"),
+    `/* Gerado por scripts/optimize-images.mjs. Não editar à mão.\n` +
+      ` * Larguras que existem de fato para cada imagem em public/images/r/. */\n` +
+      `export const imageWidths: Record<string, number[]> = {\n${linhas}\n};\n`,
+  );
+
   console.log(
-    `\n${escritas} variantes em public/images/r/.\n` +
+    `\nManifesto em app/image-manifest.ts (${Object.keys(manifesto).length} imagens).\n` +
+      `${escritas} variantes em public/images/r/.\n` +
       `Menor AVIF de cada imagem somado: ${kb(menorTotal)} KB contra ${kb(origemTotal)} KB dos originais ` +
       `— ${Math.round((1 - menorTotal / origemTotal) * 100)}% menor.`,
   );

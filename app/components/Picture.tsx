@@ -10,15 +10,19 @@
  * navegador entende vence, então AVIF vem antes de WebP, e o `<img>` final
  * aponta para o arquivo original como último recurso.
  */
-const WIDTHS = [480, 800, 1200, 1600] as const;
+/* Quais larguras foram realmente geradas para cada imagem. Uma foto menor
+   que uma largura alvo não é ampliada, então nem toda imagem tem as
+   quatro — citar no `srcset` um arquivo inexistente faz o navegador
+   escolher justamente o que vai dar 404. */
+import { imageWidths } from "../image-manifest";
 
 /** "/images/hero-churrasco.png" → "hero-churrasco" */
 function baseName(src: string): string {
   return src.split("/").pop()?.replace(/\.[a-z0-9]+$/i, "") ?? "";
 }
 
-function srcSet(name: string, format: "avif" | "webp", maxWidth: number): string {
-  return WIDTHS.filter((w) => w <= maxWidth)
+function srcSet(name: string, format: "avif" | "webp"): string {
+  return (imageWidths[name] ?? [])
     .map((w) => `/images/r/${name}-${w}.${format} ${w}w`)
     .join(", ");
 }
@@ -37,8 +41,8 @@ export default function Picture({ src, alt, width, height, sizes, className, pri
   const name = baseName(src);
   return (
     <picture>
-      <source type="image/avif" srcSet={srcSet(name, "avif", width)} sizes={sizes} />
-      <source type="image/webp" srcSet={srcSet(name, "webp", width)} sizes={sizes} />
+      <source type="image/avif" srcSet={srcSet(name, "avif")} sizes={sizes} />
+      <source type="image/webp" srcSet={srcSet(name, "webp")} sizes={sizes} />
       <img
         src={src}
         alt={alt}
