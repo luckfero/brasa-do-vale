@@ -3,38 +3,18 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const revealSelectors = [
-  ".quick-facts-grid > div",
-  ".section-heading > *",
-  ".experience-card",
-  ".story-grid > *",
-  ".callout-grid > *",
-  ".events-feature > *",
-  ".visit-panel > *",
-  ".visit-options > *",
-  ".content-intro > *",
-  ".menu-sections article",
-  ".image-text-section > *",
-  ".journey-grid article",
-  ".two-column-copy > *",
-  ".events-overview > *",
-  ".form-heading > *",
-  ".demo-form .form-grid",
-  ".demo-form .form-footer",
-  ".story-long-grid > *",
-  ".timeline article",
-  ".timeline-heading > *",
-  ".legacy-intro > *",
-  ".legacy-values > div",
-  ".gallery-grid figure",
-  ".gallery-note",
-  ".faq-layout > *",
-  ".contact-grid > *",
-  ".map-heading > *",
-  ".map-frame",
-  ".legal-content > *",
-  ".footer-grid > *",
-];
+/**
+ * Rolagem suave até âncoras internas.
+ *
+ * A revelação por rolagem saiu daqui para components/Reveal.tsx — eram duas
+ * responsabilidades sem relação no mesmo efeito, e a de reveal precisava de
+ * uma rede de segurança que este arquivo não tinha.
+ *
+ * Por que não usar só `scroll-behavior: smooth` do CSS: o cabeçalho é fixo,
+ * então o destino precisa ser deslocado pela altura dele, senão o título da
+ * seção fica escondido atrás da barra. A duração também acompanha a
+ * distância, para salto curto não parecer arrastado.
+ */
 
 function easeInOutCubic(progress: number) {
   return progress < 0.5
@@ -46,7 +26,7 @@ export default function SiteEnhancements() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const movimentoReduzido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let animationFrame = 0;
     let restoreScrollBehavior: (() => void) | undefined;
 
@@ -62,6 +42,8 @@ export default function SiteEnhancements() {
       restoreScrollBehavior?.();
       const root = document.documentElement;
       const previousScrollBehavior = root.style.scrollBehavior;
+      /* O `scroll-behavior: smooth` do CSS brigaria com a animação daqui:
+         são dois controladores mexendo na mesma posição. */
       root.style.scrollBehavior = "auto";
       restoreScrollBehavior = () => {
         root.style.scrollBehavior = previousScrollBehavior;
@@ -69,7 +51,7 @@ export default function SiteEnhancements() {
       };
       window.history.pushState(null, "", hash);
 
-      if (reducedMotion) {
+      if (movimentoReduzido) {
         window.scrollTo({ top: destination });
         restoreScrollBehavior();
         return;
@@ -92,6 +74,7 @@ export default function SiteEnhancements() {
       if (!anchor || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
 
       const destination = new URL(anchor.href, window.location.href);
+      /* Só âncora da própria página: link para outra rota é navegação. */
       if (destination.origin !== window.location.origin || destination.pathname !== window.location.pathname || destination.search !== window.location.search || !destination.hash) return;
 
       const target = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
@@ -102,43 +85,10 @@ export default function SiteEnhancements() {
 
     document.addEventListener("click", handleAnchorClick);
 
-    const revealItems = Array.from(
-      document.querySelectorAll<HTMLElement>(revealSelectors.join(",")),
-    );
-
-    revealItems.forEach((item, index) => {
-      item.classList.add("reveal-item");
-      item.style.setProperty("--reveal-delay", `${(index % 3) * 90}ms`);
-    });
-
-    document.body.classList.add("reveal-enabled");
-
-    let observer: IntersectionObserver | undefined;
-    if (reducedMotion || !("IntersectionObserver" in window)) {
-      revealItems.forEach((item) => item.classList.add("is-visible"));
-    } else {
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add("is-visible");
-            observer?.unobserve(entry.target);
-          });
-        },
-        { threshold: 0.12, rootMargin: "0px 0px -8%" },
-      );
-      revealItems.forEach((item) => observer?.observe(item));
-    }
-
     return () => {
       document.removeEventListener("click", handleAnchorClick);
       window.cancelAnimationFrame(animationFrame);
       restoreScrollBehavior?.();
-      observer?.disconnect();
-      revealItems.forEach((item) => {
-        item.classList.remove("reveal-item", "is-visible");
-        item.style.removeProperty("--reveal-delay");
-      });
     };
   }, [pathname]);
 

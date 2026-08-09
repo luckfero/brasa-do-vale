@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Reveal from "./components/Reveal";
 import SiteEnhancements from "./components/SiteEnhancements";
 import "./globals.css";
 
@@ -67,6 +68,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <SiteEnhancements />
+        <Reveal />
       </body>
     </html>
   );

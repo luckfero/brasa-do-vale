@@ -146,3 +146,25 @@ test("cada página declara um canonical absoluto e único", async () => {
     assert.equal(encontrados[0], `${SITE}${rota === "/" ? "/" : rota}`, rota);
   }
 });
+
+test("o HTML servido não esconde nada: a trava do reveal só entra pelo JS", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-rev`);
+  const { default: worker } = await import(workerUrl.href);
+
+  for (const rota of routes) {
+    const response = await worker.fetch(
+      new Request(`http://localhost${rota}`, { headers: { accept: "text/html" } }),
+      { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+      { waitUntil() {}, passThroughOnException() {} },
+    );
+    const html = await response.text();
+
+    /* `reveal-enabled` é o que faz o CSS zerar a opacidade. Se viesse já no
+       HTML, quem abrisse o site com o JavaScript bloqueado — ou antes de ele
+       carregar — veria a página em branco. A classe tem que ser adicionada
+       pelo componente, depois de confirmar que dá para revelar de volta. */
+    assert.doesNotMatch(html, /class="[^"]*\breveal-enabled\b/, rota);
+    assert.doesNotMatch(html, /class="[^"]*\breveal-item\b/, rota);
+  }
+});
