@@ -368,7 +368,8 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .text-link-light { color: var(--gold-light) !important; display: inline-block; }
 .footer-bottom { margin-top: 4rem; padding: 1.3rem 0; display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.5); font-size: 0.7rem; }
 .footer-bottom p { margin: 0; }
-.footer-bottom a { color: inherit; }
+/* `padding-block` leva o alvo aos 24px mínimos: o link media 18px. */
+.footer-bottom a { display: inline-block; padding-block: 4px; color: inherit; }
 
 /* Internal pages */
 .page-hero {
@@ -432,7 +433,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .events-overview { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(3rem, 7vw, 7rem); align-items: center; }
 .events-image { min-height: 650px; position: relative; background: var(--charcoal) center / cover no-repeat; box-shadow: var(--shadow); }
 .events-image { background-image: url('/images/r/sala-eventos-ilustrativa-1200.webp'); background-image: var(--bg-eventos); }
-.events-image span { position: absolute; left: 1rem; bottom: 1rem; padding: 0.4rem 0.65rem; background: rgba(28,25,23,0.86); color: var(--white); font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; }
+.events-image span { position: absolute; left: 1rem; bottom: 1rem; padding: 0.4rem 0.65rem; background: rgba(28,25,23,0.86); color: var(--white); font-size: 0.66rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; }
 .events-overview > div:last-child > p:not(.eyebrow) { margin: 1.8rem 0 0; color: #625b55; }
 .detail-list { margin: 2.2rem 0 1rem; border-top: 1px solid var(--border); }
 .detail-list > div { padding: 1rem 0; display: grid; grid-template-columns: 120px 1fr; border-bottom: 1px solid var(--border); }
@@ -504,7 +505,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .gallery-grid figure:first-child img { aspect-ratio: 2 / 1; }
 .gallery-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .gallery-grid figcaption { padding: 1.4rem; }
-.gallery-grid figcaption > span { color: var(--wine); font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.13em; }
+.gallery-grid figcaption > span { color: var(--wine); font-size: 0.66rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.13em; }
 .gallery-grid h2 { margin-top: 0.45rem; font-size: 2rem; }
 .gallery-grid p { margin-bottom: 0; color: #625b55; }
 .gallery-note { max-width: 680px; margin-top: 2rem; }
@@ -684,4 +685,15 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .reveal-enabled .reveal-item { opacity: 1; transform: none; }
+}
+
+
+/* Caixa de consentimento: o padrão do sistema tem 16 a 20px e fica
+   apertado para o dedo. 24px é o mínimo da WCAG para alvo de toque, e
+   `flex-shrink: 0` impede que ela achate ao lado do texto longo. */
+.demo-form input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  accent-color: var(--wine);
 }
