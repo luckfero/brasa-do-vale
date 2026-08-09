@@ -66,12 +66,15 @@ async function main() {
 
     let menorAvif = null;
     const disponiveis = [];
-    /* Se a foto é maior que a maior largura padrão, vale gerar também na
-       largura nativa. Sem isso o `srcset` para em 1600 e uma caixa que
-       precise de mais que isso — por corte ou por tela grande — amplia. */
-    const larguras = larguraOrigem > WIDTHS[WIDTHS.length - 1]
-      ? [...WIDTHS, larguraOrigem]
-      : WIDTHS;
+    /* Gera também na largura nativa sempre que ela não coincidir com uma das
+       padrão. A condição antes era "maior que a maior largura", e deixava
+       de fora justamente o caso comum: uma foto de 1.584px ficava com 1.200
+       como teto, porque 1.600 é maior que ela e era descartado. Aí qualquer
+       caixa que precisasse de mais de 1.200 — por recorte ou por tela densa
+       — ampliava sem ter necessidade. */
+    const larguras = WIDTHS.includes(larguraOrigem)
+      ? WIDTHS
+      : [...WIDTHS, larguraOrigem].sort((a, b) => a - b);
     for (const width of larguras) {
       if (width > larguraOrigem) continue;
       disponiveis.push(width);
