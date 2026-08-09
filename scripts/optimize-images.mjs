@@ -28,6 +28,16 @@ const OUT_DIR = join(SOURCE_DIR, "r");
 /** Larguras alvo. Imagem menor que a largura nunca é ampliada. */
 const WIDTHS = [480, 800, 1200, 1600];
 
+/* Qualidade de codificação.
+ *
+ * O AVIF começou em 50 e ficou baixo demais: a foto do hero da Nívora saía
+ * com 43 KB em 1200px e a folhagem virava borrão. 62 custa ~28 KB a mais e
+ * segura a textura fina, que é onde a diferença aparece numa foto de
+ * arquitetura. Ainda é metade do WebP equivalente.
+ */
+const Q_AVIF = 62;
+const Q_WEBP = 86;
+
 const kb = (n) => Math.round(n / 1024);
 
 async function main() {
@@ -56,17 +66,23 @@ async function main() {
 
     let menorAvif = null;
     const disponiveis = [];
-    for (const width of WIDTHS) {
+    /* Se a foto é maior que a maior largura padrão, vale gerar também na
+       largura nativa. Sem isso o `srcset` para em 1600 e uma caixa que
+       precise de mais que isso — por corte ou por tela grande — amplia. */
+    const larguras = larguraOrigem > WIDTHS[WIDTHS.length - 1]
+      ? [...WIDTHS, larguraOrigem]
+      : WIDTHS;
+    for (const width of larguras) {
       if (width > larguraOrigem) continue;
       disponiveis.push(width);
       /* Um pipeline novo por saída: reutilizar a mesma instância entre
          codificações faz o sharp reprocessar a origem já consumida. */
       const redimensionada = () => sharp(source).resize({ width, kernel: "lanczos3" });
 
-      const webp = await redimensionada().webp({ quality: 82 }).toBuffer();
+      const webp = await redimensionada().webp({ quality: Q_WEBP }).toBuffer();
       await writeFile(join(OUT_DIR, `${name}-${width}.webp`), webp);
 
-      const avif = await redimensionada().avif({ quality: 50, effort: 5 }).toBuffer();
+      const avif = await redimensionada().avif({ quality: Q_AVIF, effort: 5 }).toBuffer();
       await writeFile(join(OUT_DIR, `${name}-${width}.avif`), avif);
 
       escritas += 2;
