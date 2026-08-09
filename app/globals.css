@@ -142,7 +142,12 @@
    deixando faixa de fundo aparecendo sob a foto. */
 picture { display: contents; }
 
-html { scroll-behavior: smooth; }
+/* Barra de rolagem oculta a pedido — decisão estética consciente. O custo é
+   perder o indicador de posição na página; a rolagem por roda, toque e
+   teclado continua intacta. */
+html { scroll-behavior: smooth; scrollbar-width: none; }
+html::-webkit-scrollbar,
+body::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 body {
   margin: 0;
