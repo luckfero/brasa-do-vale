@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 import Picture from "../components/Picture";
 
-export const metadata: Metadata = { title: "Galeria", description: "Conheça os sabores e ambientes que compõem a experiência da Brasa do Vale." };
+export const metadata: Metadata = { alternates: { canonical: "/galeria" }, title: "Galeria", description: "Conheça os sabores e ambientes que compõem a experiência da Brasa do Vale." };
 
 const gallery = [
   { image: "/images/hero-churrasco.png", width: 1600, height: 1000, title: "A brasa como protagonista", text: "O tempo do fogo realça cada corte e marca a identidade da casa." },

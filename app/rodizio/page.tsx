@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 
-export const metadata: Metadata = { title: "Rodízio premium", description: "Conheça o rodízio premium da Brasa do Vale e sua seleção de cortes preparados no carvão." };
+export const metadata: Metadata = { alternates: { canonical: "/rodizio" }, title: "Rodízio premium", description: "Conheça o rodízio premium da Brasa do Vale e sua seleção de cortes preparados no carvão." };
 
 export default function RodizioPage() {
   return (

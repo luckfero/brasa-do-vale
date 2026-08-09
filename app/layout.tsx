@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   },
   description:
     "Rodízio premium, buffet completo, eventos e reservas na Brasa do Vale Churrascaria, em São Bernardo do Campo.",
+  /* A home não tem `metadata` própria, então o canonical dela vive aqui.
+     Cada página interna sobrescreve com o próprio caminho. Sem isso, uma
+     mesma página alcançada por endereços diferentes — com barra no fim, com
+     parâmetro de campanha, pelo endereço do worker — conta como várias. */
+  alternates: { canonical: "/" },
   robots: { index: false, follow: false },
   /* Sem `og:image` o link compartilhado no WhatsApp chegava sem prévia —
      um retângulo de texto. Restaurante circula por mensageiro, então a

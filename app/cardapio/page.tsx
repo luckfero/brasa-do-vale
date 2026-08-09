@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = { alternates: { canonical: "/cardapio" },
   title: "Cardápio",
   description: "Conheça o rodízio, o buffet, o almoço executivo, as bebidas e as sobremesas da Brasa do Vale.",
 };

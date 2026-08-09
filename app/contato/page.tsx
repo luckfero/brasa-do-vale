@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import DemoForm from "../components/DemoForm";
 import PageHero from "../components/PageHero";
 
-export const metadata: Metadata = { title: "Contato e localização", description: "Fale com a Brasa do Vale e planeje sua visita em São Bernardo do Campo." };
+export const metadata: Metadata = { alternates: { canonical: "/contato" }, title: "Contato e localização", description: "Fale com a Brasa do Vale e planeje sua visita em São Bernardo do Campo." };
 
 export default function ContactPage() {
   return (

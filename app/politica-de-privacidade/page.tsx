@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 
-export const metadata: Metadata = { title: "Política de privacidade", description: "Como os formulários e o mapa do site Brasa do Vale tratam dados nesta apresentação." };
+export const metadata: Metadata = { alternates: { canonical: "/politica-de-privacidade" }, title: "Política de privacidade", description: "Como os formulários e o mapa do site Brasa do Vale tratam dados nesta apresentação." };
 
 export default function PrivacyPage() {
   return (

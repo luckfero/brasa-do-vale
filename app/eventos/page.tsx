@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import DemoForm from "../components/DemoForm";
 import PageHero from "../components/PageHero";
 
-export const metadata: Metadata = { title: "Eventos", description: "Conheça o salão reservado da Brasa do Vale para aniversários, grupos e confraternizações." };
+export const metadata: Metadata = { alternates: { canonical: "/eventos" }, title: "Eventos", description: "Conheça o salão reservado da Brasa do Vale para aniversários, grupos e confraternizações." };
 
 export default function EventsPage() {
   return (

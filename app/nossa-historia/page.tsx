@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "../components/PageHero";
 
-export const metadata: Metadata = { title: "Nossa história", description: "Conheça a história da família Costa e da Brasa do Vale Churrascaria." };
+export const metadata: Metadata = { alternates: { canonical: "/nossa-historia" }, title: "Nossa história", description: "Conheça a história da família Costa e da Brasa do Vale Churrascaria." };
 
 export default function StoryPage() {
   return (

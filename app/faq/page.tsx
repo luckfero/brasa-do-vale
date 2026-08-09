@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import FaqList from "../components/FaqList";
 import PageHero from "../components/PageHero";
 
-export const metadata: Metadata = { title: "Perguntas frequentes", description: "Tire suas dúvidas antes de visitar a Brasa do Vale Churrascaria." };
+export const metadata: Metadata = { alternates: { canonical: "/faq" }, title: "Perguntas frequentes", description: "Tire suas dúvidas antes de visitar a Brasa do Vale Churrascaria." };
 
 const faqs = [
   { question: "A solicitação feita pelo site confirma a reserva?", answer: "Ainda não. Toda solicitação depende do retorno da equipe com a disponibilidade para a data, o horário e o tamanho do grupo informado." },

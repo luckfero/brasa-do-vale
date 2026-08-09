@@ -123,3 +123,26 @@ test("o robots.txt é o nosso, não o padrão da Cloudflare", async () => {
   assert.doesNotMatch(txt, /Disallow: \//i);
   assert.doesNotMatch(txt, /content-signal|EUROPEAN UNION DIRECTIVE/i);
 });
+
+test("cada página declara um canonical absoluto e único", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-can`);
+  const { default: worker } = await import(workerUrl.href);
+  const SITE = "https://brasa-do-vale.luccaoliveira123.workers.dev";
+
+  for (const rota of routes) {
+    const response = await worker.fetch(
+      new Request(`http://localhost${rota}`, { headers: { accept: "text/html" } }),
+      { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+      { waitUntil() {}, passThroughOnException() {} },
+    );
+    const head = (await response.text()).split("</head>")[0];
+    const encontrados = [...head.matchAll(/rel="canonical" href="([^"]*)"/g)].map((m) => m[1]);
+
+    /* Duas tags de canonical fazem o buscador ignorar as duas. */
+    assert.equal(encontrados.length, 1, `${rota} tem ${encontrados.length} canonical`);
+    /* Relativo é ambíguo: o mesmo caminho existe em qualquer host, então
+       não diz qual endereço é o oficial. */
+    assert.equal(encontrados[0], `${SITE}${rota === "/" ? "/" : rota}`, rota);
+  }
+});
