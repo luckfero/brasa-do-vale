@@ -39,3 +39,6 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# Cache incremental do TypeScript — regra 9.1: cache de build não se versiona.
+*.tsbuildinfo
