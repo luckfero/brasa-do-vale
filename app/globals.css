@@ -8,6 +8,10 @@
      creme ele mede 2,36:1, menos da metade do mínimo. Este tom mais fechado
      é a mesma cor uma volta abaixo e chega a 4,54:1. */
   --gold-text: #8c6825;
+  /* O #746c65 que este substitui media 4,23:1 sobre o creme das seções —
+     perto, mas abaixo do mínimo de 4,5. Este chega a 5,21:1 e a diferença a
+     olho nu é mínima. */
+  --ink-muted: #625b55;
   --gold-light: #dfbb70;
   --charcoal: #1c1917;
   --cream: #f3ebdd;
@@ -353,7 +357,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .visit-options a { padding: 1.25rem 0; display: grid; grid-template-columns: 44px 0.7fr 1fr; gap: 1rem; align-items: center; border-bottom: 1px solid var(--border); color: inherit; text-decoration: none; transition: padding-inline var(--motion-smooth), background-color var(--motion-smooth), color var(--motion-smooth), transform var(--motion-smooth); }
 .visit-options span { color: var(--wine); font-family: var(--serif); font-size: 0.8rem; }
 .visit-options strong { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; }
-.visit-options small { color: #746c65; line-height: 1.45; }
+.visit-options small { color: var(--ink-muted); line-height: 1.45; }
 .visit-content .button { width: fit-content; }
 
 .site-footer { background: var(--charcoal); color: var(--white); padding-top: 5rem; }
@@ -419,7 +423,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .image-text-copy { padding: clamp(3rem, 7vw, 7rem); display: flex; flex-direction: column; justify-content: center; }
 .image-text-copy p:not(.eyebrow) { margin: 1.8rem 0 0; color: #625b55; }
 .image-text-copy .button { margin-top: 1.4rem; width: fit-content; }
-.image-text-copy small { margin-top: 1.2rem; color: #746c65; }
+.image-text-copy small { margin-top: 1.2rem; color: var(--ink-muted); }
 
 .journey-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
 .journey-grid article { min-height: 330px; padding: 2.2rem; background: var(--cream-light); transition: background-color var(--motion-smooth), transform var(--motion-smooth), box-shadow var(--motion-smooth); }
@@ -443,7 +447,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .detail-list > div { padding: 1rem 0; display: grid; grid-template-columns: 120px 1fr; border-bottom: 1px solid var(--border); }
 .detail-list dt { color: var(--wine); font-size: 0.69rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
 .detail-list dd { margin: 0; }
-.events-overview small { color: #746c65; }
+.events-overview small { color: var(--ink-muted); }
 
 .form-section { background: var(--cream-light); }
 .narrow-container { max-width: 900px; }
@@ -464,7 +468,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .check-field { margin: 1.4rem 0 0; display: grid !important; grid-template-columns: 22px 1fr; align-items: start; gap: 0.8rem !important; font-weight: 400 !important; }
 .check-field input { width: 20px; min-height: 20px; margin: 0.15rem 0 0; accent-color: var(--wine); }
 .form-footer { margin-top: 0.2rem; }
-.required-note { margin: 0.8rem 0 1.3rem; color: #746c65; font-size: 0.72rem; }
+.required-note { margin: 0.8rem 0 1.3rem; color: var(--ink-muted); font-size: 0.72rem; }
 .form-disclaimer { max-width: 610px; margin: 1.2rem 0 0; color: #635c56; font-size: 0.8rem; }
 .form-success { min-height: 470px; padding: 4rem; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; background: var(--cream); border: 1px solid var(--border); box-shadow: var(--shadow); }
 .form-success > span { width: 64px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; background: var(--olive); color: var(--white); font-size: 1.8rem; }
