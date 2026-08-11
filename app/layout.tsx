@@ -15,7 +15,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://brasa.varandaestudi
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Brasa do Vale Churrascaria | Experiência premium no ABC",
+    default: "Brasa do Vale Churrascaria",
     template: "%s | Brasa do Vale Churrascaria",
   },
   description:
