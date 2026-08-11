@@ -51,8 +51,12 @@ export const metadata: Metadata = {
     images: ["/og-brasa-do-vale.jpg"],
   },
   icons: {
-    icon: [{ url: "/favicon.svg?v=2", type: "image/svg+xml" }],
-    shortcut: "/favicon.svg?v=2",
+    /* v3 = espeto com três cortes, 2026-08-11. Antes era v2.
+       **Trocar o desenho do favicon sem subir este número não chega em
+       ninguém que já visitou o site:** o navegador guarda favicon num índice
+       próprio, fora do cache HTTP, e ignora `must-revalidate`. */
+    icon: [{ url: "/favicon.svg?v=3", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg?v=3",
   },
 };
 
