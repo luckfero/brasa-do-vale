@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -21,9 +20,14 @@ export default function Header() {
     <header className="site-header">
       <div className="container header-inner">
         {/* A navegação documental preserva transições entre páginas e evita dependência de JavaScript. */}
+        {/* Sem símbolo ao lado do nome desde 2026-08-11: a marca vive só no
+            favicon. O nome em serifada já carrega a identidade, e o símbolo
+            competia com ele em vez de somar.
+
+            O `eslint-disable` abaixo precisa ficar colado no `<a>`: ele vale
+            para a próxima linha, e um comentário no meio o desativa. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a className="wordmark" href="/" aria-label="Brasa do Vale Churrascaria — início">
-          <Image className="brand-mark" src="/logo-mark.svg" alt="" width={46} height={46} priority />
           <span className="wordmark-copy">
             <span className="wordmark-main">Brasa do Vale</span>
             <span className="wordmark-sub">Churrascaria</span>

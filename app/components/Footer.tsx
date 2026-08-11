@@ -1,12 +1,11 @@
-import Image from "next/image";
-
 export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
+          {/* Sem símbolo ao lado do nome desde 2026-08-11. Ver a nota no
+              Header. */}
           <div className="footer-brand-lockup">
-            <Image className="brand-mark brand-mark-footer" src="/logo-mark.svg" alt="" width={52} height={52} />
             <span className="wordmark-copy">
               <span className="wordmark-main">Brasa do Vale</span>
               <span className="wordmark-sub">Churrascaria</span>

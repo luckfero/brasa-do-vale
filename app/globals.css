@@ -210,7 +210,6 @@ button, input, textarea, select { font: inherit; }
 .header-inner { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
 
 .wordmark { display: flex; align-items: center; gap: 0.78rem; text-decoration: none; line-height: 1; transition: opacity var(--motion-smooth), transform var(--motion-smooth); }
-.brand-mark { width: 46px; height: 46px; flex: 0 0 auto; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.2)); }
 .wordmark-copy { display: flex; flex-direction: column; }
 .wordmark-main { font-family: var(--serif); font-size: 1.48rem; letter-spacing: -0.025em; }
 .wordmark-sub { margin-top: 0.32rem; color: var(--gold-light); font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.34em; }
@@ -366,7 +365,6 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .footer-grid p { margin: 0.35rem 0; color: rgba(255,255,255,0.72); font-size: 0.86rem; }
 .footer-brand { display: flex; flex-direction: column; }
 .footer-brand-lockup { display: flex; align-items: center; gap: 0.9rem; line-height: 1; }
-.brand-mark-footer { width: 52px; height: 52px; }
 .footer-brand p { max-width: 280px; margin-top: 1.3rem; }
 .footer-muted { color: rgba(255,255,255,0.48) !important; font-size: 0.74rem !important; }
 .footer-grid ul { list-style: none; padding: 0; margin: 0; }
@@ -638,7 +636,6 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 @media (max-width: 720px) {
   .header-inner { min-height: 72px; gap: 0.8rem; }
   .wordmark { gap: 0.58rem; }
-  .brand-mark { width: 40px; height: 40px; }
   .wordmark-main { font-size: 1.28rem; }
   .wordmark-sub { font-size: 0.64rem; letter-spacing: 0.24em; }
   .main-nav { inset-block-start: 72px; max-height: calc(100vh - 72px); }
