@@ -7,7 +7,10 @@ import "./globals.css";
 
 /* Sem isto o `og:image` sai como caminho relativo, e o WhatsApp — que
    busca a imagem de fora do site — não consegue resolvê-lo. */
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://brasa-do-vale.luccaoliveira123.workers.dev";
+/* Domínio próprio desde 2026-08-10. O endereço do worker carregava o nome
+   pessoal na URL e ainda ia parar no `og:image`, que é o que monta o cartão
+   de pré-visualização quando o link é colado no WhatsApp. */
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://brasa.varandaestudioweb.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

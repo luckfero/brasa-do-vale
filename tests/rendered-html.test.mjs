@@ -162,7 +162,9 @@ test("cada página declara um canonical absoluto e único", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-can`);
   const { default: worker } = await import(workerUrl.href);
-  const SITE = "https://brasa-do-vale.luccaoliveira123.workers.dev";
+  /* Domínio próprio desde 2026-08-10. O endereço `workers.dev` continua
+     respondendo, mas o canonical precisa apontar para um só lugar, e é este. */
+  const SITE = "https://brasa.varandaestudioweb.com";
 
   for (const rota of routes) {
     const response = await worker.fetch(

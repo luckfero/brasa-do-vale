@@ -2,6 +2,15 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "brasa-do-vale",
   "main": "worker/index.ts",
+  // Domínio próprio declarado aqui, e não no painel: no deploy o wrangler
+  // cria o registro DNS e pede o certificado sozinho. Ver a nota igual no
+  // wrangler da Nívora.
+  "routes": [
+    {
+      "pattern": "brasa.varandaestudioweb.com",
+      "custom_domain": true
+    }
+  ],
   "compatibility_date": "2026-05-15",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
