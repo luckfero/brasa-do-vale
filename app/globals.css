@@ -20,7 +20,16 @@
   --white: #fffdfa;
   --border: rgba(28, 25, 23, 0.16);
   --shadow: 0 22px 60px rgba(39, 21, 17, 0.12);
-  --motion-smooth: 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* Movimento. Este token carrega duracao e curva juntas e e consumido em
+     catorze transicoes, quase todas de hover. Estava em 480ms com uma curva
+     digitada a mao: interface fica abaixo de 300ms, e a curva de referencia
+     para entrada e saida e esta. Trocar aqui conserta as catorze. */
+  --motion-smooth: 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dur-press: 160ms;
+  --dur-fast: 200ms;
+  --dur-base: 250ms;
+  --dur-slow: 300ms;
   --serif: Georgia, "Times New Roman", serif;
   --sans: Arial, Helvetica, sans-serif;
 }
@@ -217,8 +226,14 @@ button, input, textarea, select { font: inherit; }
 .main-nav { display: flex; align-items: center; gap: 1.6rem; }
 .main-nav ul { display: flex; align-items: center; gap: 1.35rem; list-style: none; margin: 0; padding: 0; }
 .main-nav ul a { position: relative; text-decoration: none; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em; transition: color var(--motion-smooth), opacity var(--motion-smooth); }
-.main-nav ul a::after { content: ""; position: absolute; left: 0; right: 100%; bottom: -0.5rem; height: 1px; background: var(--gold-light); transition: right var(--motion-smooth); }
-.main-nav ul a:hover::after, .main-nav ul a[aria-current="page"]::after { right: 0; }
+/* A barra existe na largura final e e revelada por escala. Antes ela crescia
+   animando `right`, que recalcula layout a cada quadro do hover na navegacao. */
+.main-nav ul a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -0.5rem; height: 1px; background: var(--gold-light); transform: scaleX(0); transform-origin: left; transition: transform var(--motion-smooth); }
+.main-nav ul a[aria-current="page"]::after { transform: scaleX(1); }
+/* Toque dispara :hover e o deixa preso: movimento de mouse so aqui. */
+@media (hover: hover) and (pointer: fine) {
+  .main-nav ul a:hover::after { transform: scaleX(1); }
+}
 
 .menu-toggle { display: none; border: 0; background: transparent; color: inherit; align-items: center; gap: 0.65rem; cursor: pointer; }
 .menu-toggle-lines { width: 1.4rem; display: grid; gap: 0.35rem; }
@@ -248,8 +263,11 @@ button, input, textarea, select { font: inherit; }
 }
 
 .button::after { content: ""; position: absolute; inset: -45% auto -45% -55%; width: 38%; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.32), transparent); transform: skewX(-18deg) translateX(0); transition: transform 680ms cubic-bezier(0.22, 1, 0.36, 1); }
-.button:hover { transform: translateY(-4px) scale(1.012); box-shadow: 0 16px 34px rgba(28, 25, 23, 0.18); }
-.button:hover::after { transform: skewX(-18deg) translateX(430%); }
+/* Toque dispara :hover e o deixa preso: movimento de mouse so aqui. */
+@media (hover: hover) and (pointer: fine) {
+  .button:hover { transform: translateY(-4px) scale(1.012); box-shadow: 0 16px 34px rgba(28, 25, 23, 0.18); }
+  .button:hover::after { transform: skewX(-18deg) translateX(430%); }
+}
 .button:active { transform: translateY(-1px) scale(0.972); box-shadow: 0 6px 16px rgba(28, 25, 23, 0.12); transition-duration: 160ms; }
 .button:focus-visible { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(28, 25, 23, 0.14); }
 .button-gold { background: var(--gold); color: var(--charcoal); }
@@ -287,8 +305,11 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .hero-scroll { position: absolute; right: max(1rem, calc((100vw - 1180px) / 2)); bottom: 1.6rem; z-index: 2; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.7rem; color: var(--white); background: rgba(18,16,15,0.58); border: 1px solid rgba(223,187,112,0.72); border-radius: 999px; backdrop-filter: blur(10px); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-decoration: none; text-transform: uppercase; transition: color var(--motion-smooth), transform var(--motion-smooth), background-color var(--motion-smooth), border-color var(--motion-smooth), box-shadow var(--motion-smooth); }
 .scroll-arrow { width: 10px; height: 10px; display: inline-block; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); transition: transform var(--motion-smooth); }
 .hero-scroll .scroll-arrow { color: var(--gold-light); }
-.hero-scroll:hover { color: var(--white); background: rgba(115,31,23,0.88); border-color: var(--gold-light); transform: translateY(3px); box-shadow: 0 12px 30px rgba(18,16,15,0.26); }
-.hero-scroll:hover .scroll-arrow { transform: translateY(4px) rotate(45deg); }
+/* Toque dispara :hover e o deixa preso: movimento de mouse so aqui. */
+@media (hover: hover) and (pointer: fine) {
+  .hero-scroll:hover { color: var(--white); background: rgba(115,31,23,0.88); border-color: var(--gold-light); transform: translateY(3px); box-shadow: 0 12px 30px rgba(18,16,15,0.26); }
+  .hero-scroll:hover .scroll-arrow { transform: translateY(4px) rotate(45deg); }
+}
 
 .quick-facts { background: var(--wine); color: var(--white); }
 .quick-facts-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
@@ -312,7 +333,10 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .experience-card > p:not(.eyebrow) { margin: 0; color: #665f59; }
 .text-link { width: fit-content; margin-top: auto; padding-top: 2rem; color: var(--wine); font-size: 0.79rem; font-weight: 800; letter-spacing: 0.055em; text-decoration: none; text-transform: uppercase; transition: color var(--motion-smooth), transform var(--motion-smooth); }
 .link-arrow { width: 8px; height: 8px; display: inline-block; margin-left: 0.25rem; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; color: var(--gold); transition: transform var(--motion-smooth); }
-.text-link:hover .link-arrow { transform: translate(3px, -3px); }
+/* Toque dispara :hover e o deixa preso: movimento de mouse so aqui. */
+@media (hover: hover) and (pointer: fine) {
+  .text-link:hover .link-arrow { transform: translate(3px, -3px); }
+}
 .text-link:active { transform: scale(0.975); }
 
 .story-preview { background: var(--cream-light); }
@@ -600,7 +624,9 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
   transform: translateY(0);
 }
 
-@media (hover: hover) {
+/* `pointer: fine` junto: um aparelho hibrido com tela sensivel ao toque
+   responde `hover: hover` e mesmo assim prende o estado no dedo. */
+@media (hover: hover) and (pointer: fine) {
   .wordmark:hover { opacity: 0.88; transform: translateY(-1px); }
   .experience-card:hover { background: rgba(255,255,255,0.42); transform: translateY(-5px); box-shadow: 0 18px 38px rgba(39,21,17,0.08); z-index: 1; }
   .journey-grid article:hover { background: var(--white); transform: translateY(-4px); }
@@ -694,8 +720,33 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+
+  /* Animacao de keyframe aqui e sempre decorativa: sai inteira. */
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+
+  /* Menos movimento nao e menos resposta. Cor, opacidade e sombra continuam
+     transicionando, que e o que confirma ao visitante que a interface ouviu
+     ele; o que sai da lista e o deslocamento. Antes daqui havia um
+     `transition-duration: 0.01ms !important` que zerava tudo, inclusive o
+     retorno do clique. */
+  *, *::before, *::after { transition-property: opacity, color, background-color, border-color, box-shadow, fill, stroke !important; }
+
+  /* Sem transicao, um transform de hover viraria pulo instantaneo, que e pior
+     que o movimento suave. O retorno do clique (:active) fica de fora de
+     proposito: ele confirma o toque e some sozinho. */
   .reveal-enabled .reveal-item { opacity: 1; transform: none; }
+  .wordmark:hover,
+  .button:hover,
+  .experience-card:hover,
+  .journey-grid article:hover,
+  .gallery-grid figure:hover,
+  .hero-scroll:hover { transform: none; }
+  /* Reafirmado depois do :hover acima: os dois tem a mesma especificidade, e
+     sem esta linha o afundamento do clique seria apagado junto. */
+  .button:active { transform: translateY(-1px) scale(0.972); }
+  .hero-scroll:hover .scroll-arrow { transform: rotate(45deg); }
+  .text-link:hover .link-arrow { transform: none; }
+  .button:hover::after { transform: skewX(-18deg) translateX(0); }
 }
 
 
