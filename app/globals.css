@@ -377,7 +377,11 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .visit-content { padding: clamp(2.5rem, 6vw, 5.5rem); display: flex; flex-direction: column; justify-content: center; }
 .visit-content > p { max-width: 560px; margin: 0 0 2rem; color: #625b55; }
 .visit-options { margin-bottom: 2.2rem; border-top: 1px solid var(--border); }
-.visit-options a { padding: 1.25rem 0; display: grid; grid-template-columns: 44px 0.7fr 1fr; gap: 1rem; align-items: center; border-bottom: 1px solid var(--border); color: inherit; text-decoration: none; transition: padding-inline var(--motion-smooth), background-color var(--motion-smooth), color var(--motion-smooth), transform var(--motion-smooth); }
+.visit-options a { padding: 1.25rem 0; display: grid; grid-template-columns: 44px 0.7fr 1fr; gap: 1rem; align-items: center; border-bottom: 1px solid var(--border); color: inherit; text-decoration: none; transition: background-color var(--motion-smooth), color var(--motion-smooth); }
+/* O recuo do hover saiu do `padding`, que recalcula layout a cada quadro, e
+   virou deslocamento dos filhos. O retangulo de fundo fica parado; so o
+   conteudo anda, que e o que o olho ve. */
+.visit-options a > * { transition: transform var(--motion-smooth); }
 .visit-options span { color: var(--wine); font-family: var(--serif); font-size: 0.8rem; }
 .visit-options strong { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; }
 .visit-options small { color: var(--ink-muted); line-height: 1.45; }
@@ -432,7 +436,10 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .demo-disclosure strong { display: block; color: var(--wine); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.11em; }
 .demo-disclosure p { margin: 0.45rem 0 0; color: #625b55; font-size: 0.86rem; }
 .menu-sections { border-top: 1px solid var(--border); }
-.menu-sections article { min-height: 180px; padding: 2.3rem 0; display: grid; grid-template-columns: 80px 1fr; gap: 1.5rem; border-bottom: 1px solid var(--border); transition: padding-inline 280ms ease, background-color 280ms ease; }
+.menu-sections article { min-height: 180px; padding: 2.3rem 0; display: grid; grid-template-columns: 80px 1fr; gap: 1.5rem; border-bottom: 1px solid var(--border); transition: background-color var(--dur-slow) var(--ease-out); }
+/* Mesmo motivo do `.visit-options a > *` acima: recuo por transform, nao por
+   padding. */
+.menu-sections article > * { transition: transform var(--dur-slow) var(--ease-out); }
 .menu-sections article > span { color: var(--wine); font-family: var(--serif); font-size: 1rem; }
 .menu-sections article > div { display: grid; grid-template-columns: 0.75fr 1fr 0.65fr; gap: 2.5rem; align-items: start; }
 .menu-sections h3 { color: var(--wine); }
@@ -546,7 +553,12 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .faq-layout .button { margin-top: 1rem; }
 .faq-list { border-top: 1px solid var(--border); }
 .faq-list details { border-bottom: 1px solid var(--border); }
-.faq-list summary { min-height: 82px; padding: 1.25rem 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer; color: var(--charcoal); font-family: var(--serif); font-size: 1.35rem; list-style: none; transition: color var(--motion-smooth), padding-inline var(--motion-smooth); }
+/* Aqui o recuo saiu da transicao em vez de virar transform, e a diferenca e
+   estrutural: o `summary` tem a pergunta como texto solto, sem elemento em
+   volta. Deslocar "os filhos" moveria so o `+` e deixaria a pergunta parada.
+   O recuo continua acontecendo, de uma vez; sao 5,6px e quem o olho segue e
+   a cor. */
+.faq-list summary { min-height: 82px; padding: 1.25rem 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer; color: var(--charcoal); font-family: var(--serif); font-size: 1.35rem; list-style: none; transition: color var(--motion-smooth); }
 .faq-list summary::-webkit-details-marker { display: none; }
 .faq-list summary span { color: var(--gold); font-family: var(--sans); font-size: 1.5rem; transition: rotate 180ms ease; }
 .faq-list details[open] summary span { rotate: 45deg; }
@@ -630,8 +642,10 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
   .wordmark:hover { opacity: 0.88; transform: translateY(-1px); }
   .experience-card:hover { background: rgba(255,255,255,0.42); transform: translateY(-5px); box-shadow: 0 18px 38px rgba(39,21,17,0.08); z-index: 1; }
   .journey-grid article:hover { background: var(--white); transform: translateY(-4px); }
-  .menu-sections article:hover { padding-inline: 1rem; background: rgba(255,255,255,0.45); }
-  .visit-options a:hover { padding-inline: 0.8rem; background: rgba(199,151,62,0.1); color: var(--wine); }
+  .menu-sections article:hover { background: rgba(255,255,255,0.45); }
+  .menu-sections article:hover > * { transform: translateX(1rem); }
+  .visit-options a:hover { background: rgba(199,151,62,0.1); color: var(--wine); }
+  .visit-options a:hover > * { transform: translateX(0.8rem); }
   .events-feature-image:hover { background-position: center 48%; }
   .gallery-grid figure:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
   .faq-list summary:hover { color: var(--wine); padding-inline: 0.35rem; }
@@ -741,6 +755,8 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
   .journey-grid article:hover,
   .gallery-grid figure:hover,
   .hero-scroll:hover { transform: none; }
+  .menu-sections article:hover > *,
+  .visit-options a:hover > * { transform: none; }
   /* Reafirmado depois do :hover acima: os dois tem a mesma especificidade, e
      sem esta linha o afundamento do clique seria apagado junto. */
   .button:active { transform: translateY(-1px) scale(0.972); }
