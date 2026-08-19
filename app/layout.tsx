@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import Reveal from "./components/Reveal";
 import SiteEnhancements from "./components/SiteEnhancements";
 import "./globals.css";
+import "./barra-rolagem.css";
 
 /* Sem isto o `og:image` sai como caminho relativo, e o WhatsApp — que
    busca a imagem de fora do site — não consegue resolvê-lo. */
@@ -68,6 +69,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
+        {/* Tem que rodar antes da primeira pintura: se a barra nativa sumir
+            depois, a página dá um pulo da largura dela. E é por classe de
+            propósito — sem JavaScript ela não entra e o visitante fica com a
+            barra nativa. Nunca existe página sem forma de rolar. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('tem-js')" }} />
         <a className="skip-link" href="#conteudo-principal">
           Pular para o conteúdo
         </a>
@@ -76,6 +82,7 @@ export default function RootLayout({
         <Footer />
         <SiteEnhancements />
         <Reveal />
+        <script src="/barra-rolagem.js" defer />
       </body>
     </html>
   );
