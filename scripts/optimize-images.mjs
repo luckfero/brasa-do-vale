@@ -38,6 +38,21 @@ const WIDTHS = [480, 800, 1200, 1600];
 const Q_AVIF = 62;
 const Q_WEBP = 86;
 
+/* Último recurso do `<picture>`, para navegador que não entende AVIF nem WebP.
+ *
+ * Antes esse papel era do próprio PNG de origem, e o nome dele ia para o
+ * `src` do `<img>` de todo visitante: os três PNG da galeria somam 6,7 MB, e
+ * PNG de foto não é fallback, é peso morto no HTML. O JPEG sai na largura
+ * nativa da foto, então as medidas declaradas no `<img>` continuam valendo e
+ * não há salto de layout.
+ *
+ * `mozjpeg` com 78 é o ponto onde a textura da brasa ainda segura. Só as
+ * origens em PNG ganham este arquivo: as origens que já são WebP não entram
+ * em nenhum `<picture>` do site, e gerar fallback para elas seria variante
+ * nova sem ninguém citando.
+ */
+const Q_JPEG = 78;
+
 const kb = (n) => Math.round(n / 1024);
 
 async function main() {
@@ -55,10 +70,12 @@ async function main() {
      acabaria citando arquivos que nunca foram gerados — imagem menor que
      uma largura alvo não é ampliada, então nem toda foto tem as quatro. */
   const manifesto = {};
+  /* Nome → caminho do último recurso do `<picture>`. Ver Q_JPEG acima. */
+  const fallbacks = {};
 
   for (const file of files) {
     const source = join(SOURCE_DIR, file);
-    const { name } = parse(file);
+    const { name, ext } = parse(file);
     const entrada = sharp(source);
     const { width: larguraOrigem } = await entrada.metadata();
     const tamanhoOrigem = (await stat(source)).size;
@@ -93,11 +110,25 @@ async function main() {
     }
 
     manifesto[name] = disponiveis;
+
+    let jpegBytes = null;
+    if (/^\.png$/i.test(ext)) {
+      const jpeg = await sharp(source)
+        .flatten({ background: "#ffffff" })
+        .jpeg({ quality: Q_JPEG, mozjpeg: true, progressive: true })
+        .toBuffer();
+      await writeFile(join(OUT_DIR, `${name}-fallback.jpg`), jpeg);
+      fallbacks[name] = `/images/r/${name}-fallback.jpg`;
+      jpegBytes = jpeg.length;
+      escritas += 1;
+    }
+
     if (menorAvif !== null) menorTotal += menorAvif;
     console.log(
       `· ${name.padEnd(28)} ${String(larguraOrigem).padStart(4)}px  ` +
         `origem ${String(kb(tamanhoOrigem)).padStart(5)} KB  →  ` +
-        `menor AVIF ${menorAvif === null ? "—" : kb(menorAvif)} KB`,
+        `menor AVIF ${menorAvif === null ? "—" : kb(menorAvif)} KB` +
+        (jpegBytes === null ? "" : `  ·  fallback JPEG ${kb(jpegBytes)} KB`),
     );
   }
 
@@ -106,11 +137,19 @@ async function main() {
   const linhas = Object.entries(manifesto)
     .map(([nome, larguras]) => `  ${JSON.stringify(nome)}: [${larguras.join(", ")}],`)
     .join("\n");
+  const linhasFallback = Object.entries(fallbacks)
+    .map(([nome, caminho]) => `  ${JSON.stringify(nome)}: ${JSON.stringify(caminho)},`)
+    .join("\n");
   await writeFile(
     join(root, "app", "image-manifest.ts"),
     `/* Gerado por scripts/optimize-images.mjs. Não editar à mão.\n` +
       ` * Larguras que existem de fato para cada imagem em public/images/r/. */\n` +
-      `export const imageWidths: Record<string, number[]> = {\n${linhas}\n};\n`,
+      `export const imageWidths: Record<string, number[]> = {\n${linhas}\n};\n` +
+      `\n` +
+      `/* Último recurso do <picture>: o que um navegador sem AVIF e sem WebP\n` +
+      ` * baixa. Só existe para origem em PNG, que é pesada demais para entrar\n` +
+      ` * no HTML. Origem sem entrada aqui cai no arquivo original. */\n` +
+      `export const imageFallbacks: Record<string, string> = {\n${linhasFallback}\n};\n`,
   );
 
   console.log(

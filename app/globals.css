@@ -48,37 +48,43 @@
  * navegador sem `image-set()` com `type()`, a segunda declaração é inválida
  * e a primeira prevalece.
  */
+/* No desktop, o 2x aponta para a maior variante que existe de cada foto, não
+   para a mesma de 1200 do 1x. Antes os seis tokens repetiam o arquivo de
+   1200px nas duas densidades: num monitor de densidade 2 o navegador ampliava
+   1200 para o dobro e a brasa da primeira dobra saía macia, num site cujo
+   assunto é fogo. As larguras nativas abaixo (1584, 1448, 1586, 1568) já
+   estavam geradas em public/images/r/ e não eram citadas por ninguém. */
 :root {
   --bg-churrasco: image-set(
     url('/images/r/hero-churrasco-1200.avif') type('image/avif') 1x,
-    url('/images/r/hero-churrasco-1200.avif') type('image/avif') 2x,
+    url('/images/r/hero-churrasco-1584.avif') type('image/avif') 2x,
     url('/images/r/hero-churrasco-1200.webp') type('image/webp') 1x,
-    url('/images/r/hero-churrasco-1200.webp') type('image/webp') 2x);
+    url('/images/r/hero-churrasco-1584.webp') type('image/webp') 2x);
   --bg-buffet: image-set(
     url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 1x,
-    url('/images/r/buffet-ilustrativo-1200.avif') type('image/avif') 2x,
+    url('/images/r/buffet-ilustrativo-1448.avif') type('image/avif') 2x,
     url('/images/r/buffet-ilustrativo-1200.webp') type('image/webp') 1x,
-    url('/images/r/buffet-ilustrativo-1200.webp') type('image/webp') 2x);
+    url('/images/r/buffet-ilustrativo-1448.webp') type('image/webp') 2x);
   --bg-eventos: image-set(
     url('/images/r/sala-eventos-ilustrativa-1200.avif') type('image/avif') 1x,
-    url('/images/r/sala-eventos-ilustrativa-1200.avif') type('image/avif') 2x,
+    url('/images/r/sala-eventos-ilustrativa-1448.avif') type('image/avif') 2x,
     url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 1x,
-    url('/images/r/sala-eventos-ilustrativa-1200.webp') type('image/webp') 2x);
+    url('/images/r/sala-eventos-ilustrativa-1448.webp') type('image/webp') 2x);
   --bg-rodizio: image-set(
     url('/images/r/hero-rodizio-1200.avif') type('image/avif') 1x,
-    url('/images/r/hero-rodizio-1200.avif') type('image/avif') 2x,
+    url('/images/r/hero-rodizio-1586.avif') type('image/avif') 2x,
     url('/images/r/hero-rodizio-1200.webp') type('image/webp') 1x,
-    url('/images/r/hero-rodizio-1200.webp') type('image/webp') 2x);
+    url('/images/r/hero-rodizio-1586.webp') type('image/webp') 2x);
   --bg-historia: image-set(
     url('/images/r/hero-historia-1200.avif') type('image/avif') 1x,
-    url('/images/r/hero-historia-1200.avif') type('image/avif') 2x,
+    url('/images/r/hero-historia-1568.avif') type('image/avif') 2x,
     url('/images/r/hero-historia-1200.webp') type('image/webp') 1x,
-    url('/images/r/hero-historia-1200.webp') type('image/webp') 2x);
+    url('/images/r/hero-historia-1568.webp') type('image/webp') 2x);
   --bg-contato: image-set(
     url('/images/r/hero-contato-1200.avif') type('image/avif') 1x,
-    url('/images/r/hero-contato-1200.avif') type('image/avif') 2x,
+    url('/images/r/hero-contato-1586.avif') type('image/avif') 2x,
     url('/images/r/hero-contato-1200.webp') type('image/webp') 1x,
-    url('/images/r/hero-contato-1200.webp') type('image/webp') 2x);
+    url('/images/r/hero-contato-1586.webp') type('image/webp') 2x);
 }
 
 @media (max-width: 900px) {
@@ -159,12 +165,16 @@
    deixando faixa de fundo aparecendo sob a foto. */
 picture { display: contents; }
 
-/* Barra de rolagem oculta a pedido — decisão estética consciente. O custo é
-   perder o indicador de posição na página; a rolagem por roda, toque e
-   teclado continua intacta. */
-html { scroll-behavior: smooth; scrollbar-width: none; }
-html::-webkit-scrollbar,
-body::-webkit-scrollbar { width: 0; height: 0; display: none; }
+/* Quem esconde a barra nativa é `barra-rolagem.css`, e só onde existe a nossa
+   para pôr no lugar: sob `html.tem-js` e em ponteiro fino. Aqui não pode
+   esconder nada.
+
+   Antes esta folha escondia a nativa para todo mundo, sem condição. Quem
+   abrisse o site com o JavaScript bloqueado, ou antes de `barra-rolagem.js`
+   carregar, ficava sem barra nenhuma: nem a nossa, que depende do script, nem
+   a do sistema. No celular era pior, porque a nossa nem entra ali. É a regra
+   9.25 do protocolo: nunca existe página sem forma de rolar. */
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -298,7 +308,20 @@ button, input, textarea, select { font: inherit; }
 .eyebrow { margin: 0 0 1rem; color: var(--wine); font-size: 0.69rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
 .hero-eyebrow, .eyebrow-gold { color: var(--gold-light); }
 h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 400; line-height: 1.05; text-wrap: balance; }
-h1 { max-width: 800px !important; font-size: clamp(3rem, 6vw, 5.65rem); letter-spacing: -0.052em; }
+/* O teto de 800px já foi `!important`. Era o único desta folha num seletor de
+   elemento puro, e por isso o único que atropelava regra mais específica: os
+   outros quatro estão em classe, onde a marreta só desempata com ela mesma.
+   O efeito colateral: ele derrubava o `.page-hero h1 { max-width: 920px }`
+   escrito vinte linhas abaixo, então a regra do herói de página interna estava
+   escrita e morta. Medido antes de tirar: os nove h1 do site em 800px. Depois:
+   a home segue em 800 (a regra logo abaixo garante) e os oito heróis de página
+   passam a 920, que é o valor que a folha sempre declarou para eles. */
+h1 { max-width: 800px; font-size: clamp(3rem, 6vw, 5.65rem); letter-spacing: -0.052em; }
+/* Sem esta linha, `.hero-content > *` (0,1,0) ganharia do `h1` (0,0,1) e o
+   título da home cairia de 800px para 700px. O `> *` foi escrito para a
+   coluna de apoio do herói, não para a manchete: ela é a única filha que
+   passa dos 700 de propósito. Especificidade 0,1,1, empata em zero surpresa. */
+.hero-content > h1 { max-width: 800px; }
 h2 { font-size: clamp(2.3rem, 4.6vw, 4.6rem); letter-spacing: -0.042em; }
 h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .hero-copy { margin: 2.3rem 0 2.5rem; max-width: 560px; color: rgba(255,255,255,0.86); font-size: clamp(1rem, 1.5vw, 1.16rem); }
@@ -357,9 +380,10 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .story-metrics strong { color: var(--wine); font-family: var(--serif); font-size: 2.1rem; font-weight: 400; }
 .story-metrics span { max-width: 110px; font-size: 0.68rem; line-height: 1.35; text-transform: uppercase; letter-spacing: 0.05em; }
 
-.callout-grid { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 5rem; align-items: end; }
-.callout-grid h2 { max-width: 760px; }
-.callout-grid > div:last-child p { margin: 0 0 2.4rem; color: rgba(255,255,255,0.72); }
+/* As três regras de `.callout-grid` saíram em 2026-09-08. A classe não existe
+   em nenhuma das nove rotas: conferido por grep no JSX e no HTML publicado das
+   nove páginas, zero ocorrência em todas. Saiu junto a entrada correspondente
+   em components/Reveal.tsx. */
 
 .events-callout { padding-block: 0; }
 .events-feature { min-height: 650px; display: grid; grid-template-columns: 0.88fr 1.12fr; align-items: stretch; }
@@ -565,6 +589,22 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
 .faq-list details > div { padding: 0 2rem 1.5rem 0; }
 .faq-list details p { margin: 0; color: #625b55; }
 
+/* Atalhos da página de endereço inexistente (app/not-found.tsx). Mesma régua
+   das listas do site: filete de 1px em cima e embaixo de cada item, serifada
+   no nome, cinza de apoio no resumo. O hover move só `transform`, dentro dos
+   300ms de interface (regra 9.20). */
+.rota-perdida { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
+.rota-perdida li { border-bottom: 1px solid var(--border); }
+.rota-perdida a { display: grid; grid-template-columns: minmax(150px, 0.42fr) 1fr; column-gap: 2rem; align-items: baseline; padding: 1.35rem 0.9rem; text-decoration: none; transition: background-color var(--motion-smooth), transform var(--motion-smooth); }
+.rota-perdida strong { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; }
+.rota-perdida span { color: var(--ink-muted); font-size: 0.92rem; }
+@media (hover: hover) and (pointer: fine) {
+  .rota-perdida a:hover { background: var(--white); transform: translateX(6px); }
+}
+@media (max-width: 720px) {
+  .rota-perdida a { grid-template-columns: 1fr; row-gap: 0.35rem; }
+}
+
 .contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 0.68fr); gap: clamp(3rem, 7vw, 7rem); align-items: center; }
 .contact-cards { margin-top: 2.8rem; border-top: 1px solid var(--border); }
 .contact-cards article { padding: 1.5rem 0; display: grid; grid-template-columns: minmax(175px, 0.78fr) 1fr; column-gap: 2rem; align-items: center; border-bottom: 1px solid var(--border); }
@@ -659,7 +699,7 @@ h3 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); letter-spacing: -0.03em; }
   .main-nav ul a { display: block; padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.12); font-family: var(--serif); font-size: 1.55rem; font-weight: 400; }
   .main-nav ul a::after { display: none; }
   .header-cta { width: 100%; }
-  .split-heading, .story-grid, .callout-grid, .events-feature, .visit-panel, .map-heading { grid-template-columns: 1fr; gap: 2.5rem; }
+  .split-heading, .story-grid, .events-feature, .visit-panel, .map-heading { grid-template-columns: 1fr; gap: 2.5rem; }
   .experience-card { min-height: 350px; }
   .story-visual { min-height: 520px; }
   .events-feature-copy { padding: 5rem 0 1rem; }

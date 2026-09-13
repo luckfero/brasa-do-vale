@@ -1,3 +1,5 @@
+import ReactDOM from "react-dom";
+
 const experiences = [
   {
     eyebrow: "O protagonista",
@@ -23,6 +25,43 @@ const experiences = [
 ];
 
 export default function Home() {
+  /* A foto da hero é fundo de CSS, então o navegador só descobre qual arquivo
+     pedir depois de baixar e interpretar a folha bloqueante de 46 KB. Esta
+     linha antecipa o pedido: é o único ganho de tempo de carregamento desta
+     rodada, e não desenha nada nem muda um pixel.
+
+     Só a faixa larga entra, e só o AVIF, de propósito:
+       - `type` faz quem não entende AVIF ignorar a linha. Anunciar também o
+         WebP faria quem entende os dois baixar as duas.
+
+     **O `imageSrcSet` não é enfeite, e a linha sem ele estava errada desde
+     09/09/2026.** Até aquele dia o token `--bg-churrasco` apontava o mesmo
+     arquivo de 1200 em 1x e em 2x acima de 900px, e por isso um preload com
+     endereço fixo era seguro: não havia variante errada a adiantar. A rodada
+     de sugestões visuais fez o 2x passar a apontar o arquivo de 1584, que é o
+     ponto do item 4.2, e com isso o endereço fixo virou exatamente o defeito
+     que o comentário antigo dizia estar evitando: em densidade 2 o navegador
+     baixava o 1200 adiantado pelo preload E o 1584 pedido pelo CSS. Medido:
+     duas fotos onde devia ser uma.
+
+     Com `imageSrcSet` o preload resolve a densidade pelo mesmo critério que o
+     `image-set()` do CSS usa, então os dois pedem o mesmo arquivo. Os dois
+     descritores têm de continuar iguais aos do token em app/globals.css: se um
+     mudar sem o outro, o defeito volta e não aparece em teste nenhum, só na
+     rede de quem tem tela retina.
+
+     É `ReactDOM.preload` e não uma tag `<link>` escrita à mão porque a tag
+     sai duas vezes no HTML: o React iça a dele para a head e ainda emite a
+     nossa. Mesmo endereço, então o navegador pede uma vez só, mas são 120
+     bytes de marcação repetida à toa. */
+  ReactDOM.preload("/images/r/hero-churrasco-1200.avif", {
+    as: "image",
+    type: "image/avif",
+    media: "(min-width: 901px)",
+    imageSrcSet:
+      "/images/r/hero-churrasco-1200.avif 1x, /images/r/hero-churrasco-1584.avif 2x",
+  });
+
   return (
     <main id="conteudo-principal">
       <section className="hero" aria-labelledby="hero-title">
