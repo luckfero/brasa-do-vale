@@ -74,6 +74,54 @@ test("renders every Brasa do Vale page in Brazilian Portuguese", async () => {
   assert.doesNotMatch(await homeResponse.text(), /A casa cuida dos próximos passos/i);
 });
 
+test("endereço que não existe responde 404 com a página do site", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-404`);
+  const { default: worker } = await import(workerUrl.href);
+
+  const pedir = (rota) =>
+    worker.fetch(
+      new Request(`http://localhost${rota}`, { headers: { accept: "text/html" } }),
+      { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+      { waitUntil() {}, passThroughOnException() {} },
+    );
+
+  for (const rota of ["/nao-existe", "/reservas", "/cardapio/xx", "/faq/algo/aqui"]) {
+    const response = await pedir(rota);
+    /* Código certo: 200 com cara de erro seria soft 404, e o buscador
+       indexaria endereço que não existe (regra 9.3). */
+    assert.equal(response.status, 404, rota);
+    assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i, rota);
+
+    const html = await response.text();
+    /* Antes desta página, a resposta eram nove bytes de texto puro. */
+    assert.ok(html.length > 5000, `${rota} devolveu ${html.length} bytes`);
+
+    /* A cara do site: cabeçalho, rodapé, atalho de acessibilidade, folha de
+       estilo e um h1 só. */
+    assert.match(html, /class="site-header/, rota);
+    assert.match(html, /class="site-footer/, rota);
+    assert.match(html, /class="skip-link"/, rota);
+    assert.match(html, /<html[^>]*\blang=["']pt-BR["']/i, rota);
+    assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, `${rota} tem mais de um h1`);
+    assert.match(html, /Este endereço saiu do cardápio/, rota);
+
+    /* Metadado se confere recortando a head e CONTANDO (regra 9.2): duas
+       `<title>` fazem o navegador usar a primeira, que seria a errada. */
+    const head = html.slice(0, html.indexOf("</head>"));
+    assert.match(head, /<link[^>]*rel="stylesheet"/, `${rota} sem folha de estilo`);
+    assert.equal((head.match(/<title[ >]/g) ?? []).length, 1, `${rota} não tem exatamente uma title`);
+
+    /* O vinext emite um `robots: noindex` próprio na resposta de not-found e
+       o layout emite o dele: são duas tags, e as duas precisam dizer
+       noindex. Repetir a mesma diretiva é inofensivo (o robô combina as
+       duas); o que não pode é uma delas liberar o índice. */
+    const robots = [...head.matchAll(/<meta[^>]*name="robots"[^>]*>/g)].map((m) => m[0]);
+    assert.ok(robots.length >= 1, `${rota} sem meta robots`);
+    for (const tag of robots) assert.match(tag, /noindex/i, `${rota}: ${tag}`);
+  }
+});
+
 const CABECALHOS_ESPERADOS = {
   "cross-origin-opener-policy": "same-origin",
   "permissions-policy": "camera=(), geolocation=(), microphone=()",
@@ -203,6 +251,75 @@ test("o HTML servido não esconde nada: a trava do reveal só entra pelo JS", as
     assert.doesNotMatch(html, /class="[^"]*\breveal-enabled\b/, rota);
     assert.doesNotMatch(html, /class="[^"]*\breveal-item\b/, rota);
   }
+});
+
+test("a galeria não põe o PNG de origem no HTML de quem visita", async () => {
+  const { stat } = await import("node:fs/promises");
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-gal`);
+  const { default: worker } = await import(workerUrl.href);
+
+  const response = await worker.fetch(
+    new Request("http://localhost/galeria", { headers: { accept: "text/html" } }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  const html = await response.text();
+
+  /* Os três PNG de origem somam 6,7 MB. Como fallback do `<picture>` o nome
+     deles ia no `src` de todo visitante, e quem não tem AVIF nem WebP
+     baixava 2 MB por foto. O último recurso agora é um JPEG progressivo na
+     largura nativa. O PNG continua no repositório: é dele que as variantes
+     são regeradas. */
+  assert.equal((html.match(/\.png/g) ?? []).length, 0, "PNG de origem citado no HTML");
+
+  const fallbacks = [...html.matchAll(/<img[^>]*src="([^"]*-fallback\.jpg)"/g)].map((m) => m[1]);
+  assert.equal(fallbacks.length, 3, `esperava 3 fallbacks, achei ${fallbacks.length}`);
+
+  for (const caminho of fallbacks) {
+    const arquivo = new URL(`../public${caminho}`, import.meta.url);
+    const { size } = await stat(arquivo);
+    assert.ok(size > 0, `${caminho} tem zero byte`);
+    assert.ok(size < 600_000, `${caminho} tem ${size} bytes, grande demais para fallback`);
+  }
+});
+
+test("a CSP libera o beacon de analítica da própria borda", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-csp`);
+  const { default: worker } = await import(workerUrl.href);
+
+  const response = await worker.fetch(
+    new Request("http://localhost/", { headers: { accept: "text/html" } }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+
+  /* A Cloudflare injeta o beacon em toda resposta HTML, fora do repositório.
+     Sem estas duas entradas, a política valendo mata a analítica em
+     silêncio. Medido em produção em 09/09/2026. */
+  const politica = response.headers.get("content-security-policy-report-only") ?? "";
+  assert.match(politica, /script-src[^;]*https:\/\/static\.cloudflareinsights\.com/);
+  assert.match(politica, /connect-src[^;]*https:\/\/cloudflareinsights\.com/);
+
+  /* A promoção de Report-Only para valendo é decisão de quem publica, depois
+     de olhar o console em produção. Até lá, o cabeçalho que bloqueia não
+     pode existir. */
+  assert.equal(response.headers.get("content-security-policy"), null);
+});
+
+test("a folha não esconde a barra de rolagem nativa sem ter outra no lugar", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const globais = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  /* Regra 9.25: quem esconde a nativa é a classe `tem-js`, e só em ponteiro
+     fino, e isso mora em barra-rolagem.css. Escondendo aqui, sem condição,
+     quem abre o site sem JavaScript, ou no celular, fica sem barra nenhuma. */
+  assert.doesNotMatch(globais, /scrollbar-width\s*:/, "globals.css voltou a mexer na barra nativa");
+  assert.doesNotMatch(globais, /::-webkit-scrollbar/, "globals.css voltou a mexer na barra nativa");
+
+  const barra = await readFile(new URL("../app/barra-rolagem.css", import.meta.url), "utf8");
+  assert.match(barra, /html\.tem-js\s*\{[^}]*scrollbar-width:\s*none/);
 });
 
 test("todo SVG do projeto é XML válido", async () => {
