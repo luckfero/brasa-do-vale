@@ -73,6 +73,22 @@ export default function SiteEnhancements() {
       const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href*="#"]');
       if (!anchor || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
 
+      /* O link de pular conteúdo fica de fora, e não é detalhe de estilo.
+         O seletor acima casa com ele (mesma origem, mesma rota, com hash), e
+         o `preventDefault()` lá embaixo cancelava a navegação por âncora do
+         navegador. Só que é justamente essa navegação que move o ponto de
+         partida do Tab para o <main>: cancelada, a página rolava e o próximo
+         Tab voltava para o cabeçalho, ou seja, o link não cumpria a função
+         que a WCAG 2.4.1 cobra dele.
+
+         A saída é sair daqui antes e deixar o comportamento nativo agir, que
+         já rola e já leva o foco junto. Mover o foco por código seria o outro
+         caminho, e ele foi descartado de propósito: `:focus-visible` da folha
+         desenha contorno de 3px, e pôr foco num <main> ou numa <section>
+         pintaria esse contorno em volta de um bloco inteiro. Isso é mudança
+         de tela, e mudança de tela não se decide aqui. */
+      if (anchor.classList.contains("skip-link")) return;
+
       const destination = new URL(anchor.href, window.location.href);
       /* Só âncora da própria página: link para outra rota é navegação. */
       if (destination.origin !== window.location.origin || destination.pathname !== window.location.pathname || destination.search !== window.location.search || !destination.hash) return;

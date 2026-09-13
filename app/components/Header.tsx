@@ -27,7 +27,7 @@ export default function Header() {
             O `eslint-disable` abaixo precisa ficar colado no `<a>`: ele vale
             para a próxima linha, e um comentário no meio o desativa. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a className="wordmark" href="/" aria-label="Brasa do Vale Churrascaria — início">
+        <a className="wordmark" href="/" aria-label="Brasa do Vale Churrascaria, início">
           <span className="wordmark-copy">
             <span className="wordmark-main">Brasa do Vale</span>
             <span className="wordmark-sub">Churrascaria</span>

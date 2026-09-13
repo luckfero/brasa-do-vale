@@ -38,7 +38,11 @@ const SELETORES = [
   ".section-heading > *",
   ".experience-card",
   ".story-grid > *",
-  ".callout-grid > *",
+  /* `.callout-grid` saiu daqui em 2026-09-08: a classe não existe em nenhuma
+     das nove rotas (conferido por grep no JSX e no HTML publicado das nove),
+     então a entrada nunca casou com nada. É exatamente o modo de falha que o
+     comentário acima descreve, só que ao contrário: seletor sobrando em vez
+     de faltando. As regras órfãs de globals.css saíram junto. */
   ".events-feature > *",
   ".visit-panel > *",
   ".visit-options > *",
