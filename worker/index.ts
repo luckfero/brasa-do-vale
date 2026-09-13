@@ -41,6 +41,40 @@ const cabecalhosDeSeguranca: Record<string, string> = {
   "Strict-Transport-Security": "max-age=31536000",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
+  /* CSP em modo de observação, não valendo ainda.
+     `Report-Only` não bloqueia nada: o navegador só escreve no console o que
+     a política teria barrado. Entra assim de propósito, porque a política
+     valendo é capaz de apagar coisa da tela e isso precisa de prova antes,
+     não depois. Dois pontos exigem conferência de olho no console das nove
+     rotas antes de trocar o nome do cabeçalho para `Content-Security-Policy`:
+
+       script-src 'unsafe-inline'  o HTML servido traz blocos <script> em
+                                   linha do vinext e o de layout.tsx:76, que
+                                   põe a classe `tem-js` antes da primeira
+                                   pintura. Sem isso a barra de rolagem
+                                   própria e a hidratação quebram.
+       frame-src www.google.com    /contato embute o mapa do Google. Com
+                                   `default-src 'self'` sozinho o mapa some.
+
+     Quando o console vier limpo nas nove rotas, é só renomear o cabeçalho.
+
+     `static.cloudflareinsights.com` em `script-src` e `cloudflareinsights.com`
+     em `connect-src` são a analítica da própria borda que hospeda o site.
+     Medido em 09/09/2026: a Cloudflare injeta
+     `<script src="https://static.cloudflareinsights.com/beacon.min.js/...">`
+     em toda resposta HTML, e esse script depois chama a origem de coleta.
+     Nada disso passa pelo repositório, então não aparece em auditoria de
+     código, e só aparece na resposta quando se pede a página com
+     `accept: text/html` (curl seco não vê). Sem estas duas entradas, a
+     política valendo derruba a analítica em silêncio: nenhum aviso, nenhum
+     número. `connect-src` precisou ser escrito por extenso porque antes ele
+     herdava `default-src 'self'`. */
+  "Content-Security-Policy-Report-Only":
+    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; " +
+    "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; " +
+    "connect-src 'self' https://cloudflareinsights.com; " +
+    "frame-src https://www.google.com; " +
+    "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
 };
 
 /**
@@ -96,6 +130,13 @@ function comSeguranca(response: Response): Response {
 
 const upstream = handler as unknown as WorkerHandler;
 
+/* Arquivos de configuração da Cloudflare que não são página: sem esta lista,
+   `/_headers` cai no renderizador e responde 200 com corpo vazio e sem
+   Content-Type, o que é resposta incoerente que scanner marca e cache guarda.
+   Medido em produção em 09/09/2026: 200, zero byte, sem tipo. A Varanda já
+   fechava o caso idêntico; aqui faltava. */
+const CAMINHOS_DE_CONFIGURACAO = new Set(["/_headers", "/_redirects", "/.assetsignore"]);
+
 const worker: WorkerHandler = {
   async fetch(request, env, ctx) {
     /* Antes de qualquer coisa: HTTP puro não entrega página.
@@ -109,6 +150,18 @@ const worker: WorkerHandler = {
         status: 301,
         headers: { Location: url.toString(), "Strict-Transport-Security": "max-age=31536000" },
       });
+    }
+
+    if (CAMINHOS_DE_CONFIGURACAO.has(url.pathname)) {
+      return comSeguranca(
+        new Response("Not Found", {
+          status: 404,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-store",
+          },
+        }),
+      );
     }
 
     return comSeguranca(await upstream.fetch(request, env, ctx));

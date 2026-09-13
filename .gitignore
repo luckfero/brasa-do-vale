@@ -42,3 +42,8 @@ next-env.d.ts
 
 # Cache incremental do TypeScript — regra 9.1: cache de build não se versiona.
 *.tsbuildinfo
+
+# Segredo de desenvolvimento do Worker: nunca versionado, e o wrangler
+# tambem nao envia no deploy.
+.dev.vars
+.dev.vars.*

@@ -7,10 +7,27 @@
 # `nosniff` é o que importa aqui: impede o navegador de ignorar o
 # Content-Type declarado e adivinhar o tipo do arquivo — que é como um
 # arquivo servido como imagem acaba executado como script.
+#
+# Comentário fica sempre na coluna zero, nunca indentado dentro de um bloco:
+# dentro do bloco o analisador da Cloudflare lê linha como par nome/valor, e
+# um erro ali não avisa, só derruba o bloco inteiro em silêncio.
+#
+# Os quatro cabeçalhos acrescentados em 2026-09-08 ao bloco `/*` repetem o que
+# o worker já manda no HTML, agora para o caminho que não passa por ele. O HSTS
+# é o que mais pesa: sem ele, quem chega ao site por um arquivo estático não
+# grava a ordem de usar só HTTPS. O `X-Robots-Tag` existe porque o site é
+# conceitual e todo HTML sai com meta robots noindex, mas arquivo não é HTML e
+# não carrega meta: sem esta linha a foto de compartilhamento e as variantes
+# entram na busca por imagem com o nome de um restaurante que não existe.
 
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: camera=(), geolocation=(), microphone=()
+  X-Robots-Tag: noindex, nofollow
 
 # Conteúdo com hash no nome nunca muda: pode ficar em cache para sempre.
 /assets/*
@@ -19,7 +36,27 @@
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
+# Os originais em /images/ eram os únicos sem regra de cache, e a Cloudflare
+# respondia `max-age=0, must-revalidate` neles. São os arquivos mais pesados do
+# site (os três PNG da galeria somam 6,7 MB) e só mudam quando a foto muda.
+/images/*
+  Cache-Control: public, max-age=2592000
+
 # As variantes responsivas são regeradas junto com a foto de origem, então
 # um mês é seguro e ainda evita rebaixar quando a imagem trocar.
 /images/r/*
+  Cache-Control: public, max-age=2592000
+
+# SVG é documento, não só imagem: aberto direto na barra de endereço ele roda
+# script embutido na origem do site. O favicon de hoje não tem script, mas a
+# porta fica aberta para qualquer SVG que entre em public/ depois. A política
+# só vale quando o SVG é o documento de topo, então uso como <img> e como
+# ícone da aba continua igual.
+/*.svg
+  Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox
+
+# O HTML já versiona o pedido do favicon com `?v=3` (ver `icons` em
+# app/layout.tsx, e a regra 9.13), então revalidar a cada visita não compra
+# nada. Trocar o desenho continua exigindo subir o número da versão.
+/favicon.svg
   Cache-Control: public, max-age=2592000
