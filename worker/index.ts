@@ -147,6 +147,37 @@ const upstream = handler as unknown as WorkerHandler;
    fechava o caso idêntico; aqui faltava. */
 const CAMINHOS_DE_CONFIGURACAO = new Set(["/_headers", "/_redirects", "/.assetsignore"]);
 
+/**
+ * Na página que não existe, o HTML segue 404 e o payload RSC passa a 200.
+ *
+ * Para endereço inexistente o vinext responde 404 às duas formas da mesma
+ * página: o HTML, que é o certo (200 com cara de erro seria soft 404), e o
+ * `.rsc`, que é o mesmo conteúdo em formato de dado para o React. O cliente
+ * do vinext só busca esse `.rsc` na carga inicial quando o módulo dele roda
+ * antes dos <script> que trazem o payload embutido no fim do HTML. É uma
+ * corrida, e o WebKit a perde com frequência quando o JS já está em cache.
+ * Nessa busca o vinext exige `response.ok`: com 404 ele recarrega a página
+ * uma vez e, se perder a corrida de novo, desiste de hidratar. A 404 fica na
+ * tela, mas morta, e o menu do celular não abre. Medido em 25/09/2026 no
+ * WebKit, celular, vindo de outra página; e forçando a corrida com o HTML
+ * atrasado, o Chromium quebra igual.
+ *
+ * Nas páginas que existem a mesma corrida acontece sem ninguém notar, porque
+ * o `.rsc` delas volta 200. Com a 404 igual, a corrida deixa de importar.
+ * O buscador lê o código do documento, que continua 404. O site da Varanda
+ * já responde assim: lá o 404 é aplicado só a `text/html`.
+ *
+ * Só GET e HEAD, e só `text/x-component`: o HTML, os arquivos e qualquer ação
+ * de servidor (POST) passam intactos. O site não navega por `.rsc` (os links
+ * são `<a>` comuns), então o único uso deste payload é essa hidratação.
+ */
+function comPayloadRscHidratavel(request: Request, response: Response): Response {
+  const ehLeitura = request.method === "GET" || request.method === "HEAD";
+  const ehPayloadRsc = (response.headers.get("content-type") ?? "").startsWith("text/x-component");
+  if (response.status !== 404 || !ehLeitura || !ehPayloadRsc) return response;
+  return new Response(response.body, { status: 200, headers: response.headers });
+}
+
 const worker: WorkerHandler = {
   async fetch(request, env, ctx) {
     /* Antes de qualquer coisa: HTTP puro não entrega página.
@@ -174,7 +205,7 @@ const worker: WorkerHandler = {
       );
     }
 
-    return comSeguranca(await upstream.fetch(request, env, ctx));
+    return comSeguranca(comPayloadRscHidratavel(request, await upstream.fetch(request, env, ctx)));
   },
 };
 

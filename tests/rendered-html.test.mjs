@@ -122,6 +122,56 @@ test("endereço que não existe responde 404 com a página do site", async () =>
   }
 });
 
+test("na página que não existe, o HTML é 404 e o payload RSC é 200", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-rsc`);
+  const { default: worker } = await import(workerUrl.href);
+
+  const pedir = (rota, cabecalhos) =>
+    worker.fetch(
+      new Request(`http://localhost${rota}`, { headers: cabecalhos }),
+      { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+      { waitUntil() {}, passThroughOnException() {} },
+    );
+  const HTML = { accept: "text/html" };
+  /* Os mesmos cabeçalhos que o cliente do vinext manda na busca do .rsc. */
+  const RSC = { RSC: "1", accept: "text/x-component" };
+
+  for (const rota of ["/pagina-que-nao-existe", "/cardapio/xx"]) {
+    /* O documento é o que o buscador lê: continua 404 (regra 9.3). */
+    const html = await pedir(rota, HTML);
+    assert.equal(html.status, 404, rota);
+    assert.match(html.headers.get("content-type") ?? "", /^text\/html\b/i, rota);
+
+    /* O payload é o que o vinext busca quando o módulo dele roda antes do RSC
+       embutido no HTML. Com 404 ele recarrega a página e desiste de hidratar,
+       e a 404 fica sem menu no celular (ver comPayloadRscHidratavel no
+       worker). Tem que ser 200 e trazer a página de não encontrado, não um
+       200 qualquer. */
+    const rsc = await pedir(`${rota}.rsc`, RSC);
+    assert.equal(rsc.status, 200, `${rota}.rsc`);
+    assert.match(rsc.headers.get("content-type") ?? "", /^text\/x-component\b/i, `${rota}.rsc`);
+    assert.match(await rsc.text(), /Este endereço saiu do cardápio/, `${rota}.rsc`);
+  }
+
+  /* Controle: o payload de página que existe já era 200 e continua. */
+  const cardapio = await pedir("/cardapio.rsc", RSC);
+  assert.equal(cardapio.status, 200, "/cardapio.rsc");
+
+  /* A troca vale só para leitura. POST no .rsc é ação de servidor, que este
+     site não tem, e o código dela não é assunto da hidratação. */
+  const post = await worker.fetch(
+    new Request("http://localhost/pagina-que-nao-existe.rsc", {
+      method: "POST",
+      headers: { ...RSC, "content-type": "text/plain" },
+      body: "[]",
+    }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  assert.equal(post.status, 404, "POST no .rsc de página inexistente");
+});
+
 const CABECALHOS_ESPERADOS = {
   "cross-origin-opener-policy": "same-origin",
   "permissions-policy": "camera=(), geolocation=(), microphone=()",
