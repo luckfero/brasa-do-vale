@@ -41,22 +41,28 @@ const cabecalhosDeSeguranca: Record<string, string> = {
   "Strict-Transport-Security": "max-age=31536000",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
-  /* CSP em modo de observação, não valendo ainda.
-     `Report-Only` não bloqueia nada: o navegador só escreve no console o que
-     a política teria barrado. Entra assim de propósito, porque a política
-     valendo é capaz de apagar coisa da tela e isso precisa de prova antes,
-     não depois. Dois pontos exigem conferência de olho no console das nove
-     rotas antes de trocar o nome do cabeçalho para `Content-Security-Policy`:
+  /* CSP valendo: o navegador bloqueia o que estiver fora da lista.
+     Entrou em 2026-09-09 como `Report-Only`, que só relata, porque a política
+     valendo é capaz de apagar coisa da tela e isso precisava de prova antes,
+     não depois. Passou a valer em 2026-09-25, com o mesmo valor, depois de
+     conferida sem nenhuma violação em Chromium e em WebKit, desktop e
+     celular: as nove rotas, a 404, o mapa, os formulários preenchidos, o menu,
+     a navegação por link e o histórico. Nada entrou nem saiu da lista na
+     troca; mudou só o nome do cabeçalho.
+
+     Cada entrada que não é 'self' tem motivo, e tirar qualquer uma quebra
+     algo que o visitante vê:
 
        script-src 'unsafe-inline'  o HTML servido traz blocos <script> em
-                                   linha do vinext e o de layout.tsx:76, que
-                                   põe a classe `tem-js` antes da primeira
-                                   pintura. Sem isso a barra de rolagem
-                                   própria e a hidratação quebram.
+                                   linha do vinext (o payload que hidrata a
+                                   página) e o de layout.tsx:76, que põe a
+                                   classe `tem-js` antes da primeira pintura.
+                                   Sem isso a barra de rolagem própria e a
+                                   hidratação quebram. Trocar por nonce
+                                   exigiria reescrever o HTML aqui, porque os
+                                   blocos do vinext mudam a cada página.
        frame-src www.google.com    /contato embute o mapa do Google. Com
                                    `default-src 'self'` sozinho o mapa some.
-
-     Quando o console vier limpo nas nove rotas, é só renomear o cabeçalho.
 
      `static.cloudflareinsights.com` em `script-src` e `cloudflareinsights.com`
      em `connect-src` são a analítica da própria borda que hospeda o site.
@@ -66,10 +72,14 @@ const cabecalhosDeSeguranca: Record<string, string> = {
      Nada disso passa pelo repositório, então não aparece em auditoria de
      código, e só aparece na resposta quando se pede a página com
      `accept: text/html` (curl seco não vê). Sem estas duas entradas, a
-     política valendo derruba a analítica em silêncio: nenhum aviso, nenhum
-     número. `connect-src` precisou ser escrito por extenso porque antes ele
-     herdava `default-src 'self'`. */
-  "Content-Security-Policy-Report-Only":
+     política derruba a analítica em silêncio: nenhum aviso, nenhum número.
+     `connect-src` precisou ser escrito por extenso porque antes ele herdava
+     `default-src 'self'`.
+
+     Ligar Rocket Loader, Email Obfuscation ou Zaraz nesta zona da Cloudflare
+     injeta script que não está nesta lista, e ele passa a ser bloqueado.
+     Qualquer uma dessas opções exige rever a política antes. */
+  "Content-Security-Policy":
     "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; " +
     "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; " +
     "connect-src 'self' https://cloudflareinsights.com; " +

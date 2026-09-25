@@ -298,14 +298,15 @@ test("a CSP libera o beacon de analítica da própria borda", async () => {
   /* A Cloudflare injeta o beacon em toda resposta HTML, fora do repositório.
      Sem estas duas entradas, a política valendo mata a analítica em
      silêncio. Medido em produção em 09/09/2026. */
-  const politica = response.headers.get("content-security-policy-report-only") ?? "";
+  const politica = response.headers.get("content-security-policy") ?? "";
   assert.match(politica, /script-src[^;]*https:\/\/static\.cloudflareinsights\.com/);
   assert.match(politica, /connect-src[^;]*https:\/\/cloudflareinsights\.com/);
 
-  /* A promoção de Report-Only para valendo é decisão de quem publica, depois
-     de olhar o console em produção. Até lá, o cabeçalho que bloqueia não
-     pode existir. */
-  assert.equal(response.headers.get("content-security-policy"), null);
+  /* A política vale desde 25/09/2026, depois de conferida em Chromium e
+     WebKit. O Report-Only não pode sobrar ao lado dela: não protege nada a
+     mais, e o Safari acusa erro no console de toda página por ele não ter
+     destino de relatório. */
+  assert.equal(response.headers.get("content-security-policy-report-only"), null);
 });
 
 test("a folha não esconde a barra de rolagem nativa sem ter outra no lugar", async () => {
